@@ -1,0 +1,10 @@
+# Created by .ignore support plugin (hsz.mobi)
+.dart_tool/
+.idea/.gitignore
+.idea/libraries/
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.packages
+pubspec.lock
+config.json

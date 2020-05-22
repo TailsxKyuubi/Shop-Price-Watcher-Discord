@@ -1,0 +1,5 @@
+name: rightstuf_price_watcher
+
+dependencies:
+  html:
+  nyxx: ^0.30.0

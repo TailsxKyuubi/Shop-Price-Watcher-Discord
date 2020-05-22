@@ -3,3 +3,4 @@ name: rightstuf_price_watcher
 dependencies:
   html:
   nyxx: ^0.30.0
+  http: ^0.12.1

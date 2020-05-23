@@ -15,6 +15,7 @@ ProductCollection pc;
 Nyxx bot;
 
 void main(){
+  print('starting up');
   File configFile = new File('config.json');
   if(configFile.existsSync()){
     String configJsonString = configFile.readAsStringSync();
@@ -68,7 +69,7 @@ initiateTimer() async{
   });
 }
 
-MessageReceivedHandler( MessageEvent event ){
+MessageReceivedHandler( event ){
   if(event.message.content.split(' ')[0] == '!addWatcher'){
     addWatcherPage(event.message.content,event.message.channel, event.message.guild);
   }

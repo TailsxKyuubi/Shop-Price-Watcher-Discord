@@ -4,8 +4,11 @@ version: 0.0.1
 
 dependencies:
   html:
-  nyxx: ^0.30.0
+  nyxx:
+    git:
+      url: git://github.com/l7ssha/nyxx.git
+      ref: development
   http: ^0.12.1
 
 environment:
-  sdk: '>=2.0.0 <3.0.0'
+  sdk: '>=2.1.0 <3.0.0'

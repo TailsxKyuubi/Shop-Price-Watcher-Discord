@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'helper.dart';
 
 class ProductHistory {
   double _price;
@@ -18,10 +19,10 @@ class ProductHistory {
   }
   String toJson(){
     String dateTime = this._recordTime.year.toString() + '-'
-        + this._recordTime.month.toString() + '-'
-        + this._recordTime.day.toString() + ' '
-        + this._recordTime.hour.toString() + ':'
-        + this._recordTime.minute.toString() + ':' + this._recordTime.second.toString();
+        + toTwoDigit(this._recordTime.month) + '-'
+        + toTwoDigit(this._recordTime.day) + ' '
+        + toTwoDigit(this._recordTime.hour) + ':'
+        + toTwoDigit(this._recordTime.minute) + ':' + toTwoDigit(this._recordTime.second);
     return jsonEncode({
       'price': this._price.toString(),
       'recordTime': dateTime,
@@ -29,10 +30,10 @@ class ProductHistory {
   }
   Map asMap(){
     String dateTime = this._recordTime.year.toString() + '-'
-        + this._recordTime.month.toString() + '-'
-        + this._recordTime.day.toString() + ' '
-        + this._recordTime.hour.toString() + ':'
-        + this._recordTime.minute.toString() + ':' + this._recordTime.second.toString();
+        + toTwoDigit(this._recordTime.month) + '-'
+        + toTwoDigit(this._recordTime.day) + ' '
+        + toTwoDigit(this._recordTime.hour) + ':'
+        + toTwoDigit(this._recordTime.minute) + ':' + toTwoDigit(this._recordTime.second);
     return {
       'price': this._price.toString(),
       'recordTime': dateTime,

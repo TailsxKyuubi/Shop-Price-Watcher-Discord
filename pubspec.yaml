@@ -1,6 +1,11 @@
 name: rightstuf_price_watcher
+description: A price watcher bot
+version: 0.0.1
 
 dependencies:
   html:
   nyxx: ^0.30.0
   http: ^0.12.1
+
+environment:
+  sdk: '>=2.0.0 <3.0.0'

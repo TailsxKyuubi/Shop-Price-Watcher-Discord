@@ -8,3 +8,4 @@
 .packages
 pubspec.lock
 config.json
+db/*

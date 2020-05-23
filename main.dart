@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
+import 'package:nyxx/Vm.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:http/http.dart' as http;
 import 'package:rightstuf_price_watcher/product_history.dart';
@@ -19,7 +20,8 @@ void main(){
     String configJsonString = configFile.readAsStringSync();
     Map configJson = jsonDecode(configJsonString);
     loadConfig(configJson);
-    bot = Nyxx(config['discord-token']);
+    print('loaded config');
+    bot = NyxxVm(config['discord-token'],ignoreExceptions: false);
     bot.onMessageReceived.listen(MessageReceivedHandler);
     pc = ProductCollection();
     initiateTimer();
@@ -89,7 +91,9 @@ addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
     }
   }
   Product product = await Product.create(url.scheme +'://'+url.host+url.path);
+  product.addChannel(int.tryParse(channel.id.id));
   pc.collection.add(product);
+  channel.send(content: 'Produkt wurde hinzugefügt');
   pc.save();
 }
 

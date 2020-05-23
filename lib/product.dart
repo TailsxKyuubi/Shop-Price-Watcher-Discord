@@ -6,15 +6,15 @@ import 'package:rightstuf_price_watcher/product_history.dart';
 
 class Product {
   String Url;
-  List<ProductHistory> _priceHistory;
-  List<BigInt> _channels;
+  List<ProductHistory> _priceHistory = [];
+  List<int> _channels = [];
   String currency = '\$';
 
   List<ProductHistory> getPriceHistory(){
     return _priceHistory;
   }
 
-  List<BigInt> getChannels(){
+  List<int> getChannels(){
     return _channels;
   }
   String getUrl(){
@@ -25,7 +25,7 @@ class Product {
     _priceHistory.add(productHistoryObject);
   }
 
-  void addChannel(BigInt channelId){
+  void addChannel(int channelId){
     _channels.add(channelId);
   }
 
@@ -48,8 +48,9 @@ class Product {
   }
 
   String toJson(){
-    List<Map> historyObjects = this._priceHistory.map((element){
-      return element.asMap();
+    List<Map> historyObjects = [];
+    this._priceHistory.forEach(( ProductHistory element){
+      historyObjects.add(element.asMap());
     });
     Map tmp = {
       'url': this.Url,
@@ -62,7 +63,7 @@ class Product {
   static Future<Product> create( String url ) async {
     Product newProduct = Product();
     Uri uri = Uri.tryParse(url);
-    if(uri.host == 'www.rightstuf.com' && uri.path != '/'){
+    if(uri.host == 'www.rightstufanime.com' && uri.path != '/'){
       newProduct.Url = 'https://' + uri.host + uri.path;
       DateTime now = DateTime.now();
       double price = await newProduct.retrievePrice();
@@ -73,7 +74,7 @@ class Product {
     return null;
   }
 
-  static Product createFromData( String url, List<BigInt> channels, List<ProductHistory> productHistory ){
+  static Product createFromData( String url, List<int> channels, List<ProductHistory> productHistory ){
     Product product = Product();
     product.Url = url;
     product._channels = channels;

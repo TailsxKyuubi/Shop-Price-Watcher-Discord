@@ -110,7 +110,7 @@ addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
   pc.collection.forEach((Product product) {
     if(product.Url == link){
       productExists = true;
-      if(product.getChannels().indexOf(int.tryParse(channel.id.id)) == -1){
+      if(product.getChannels().indexOf(int.tryParse(channel.id.id)) != -1){
         channel.send(content: 'Dieses Produkt wurde bereits eingetragen');
       }else{
         product.addChannel(int.tryParse(channel.id.id));

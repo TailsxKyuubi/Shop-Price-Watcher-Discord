@@ -69,8 +69,8 @@ Future<void> checkForUpdatePrice(Product product) async{
             "Der Preis ist um " + (priceDifference > 0?priceDifference.toString() + ' gestiegen':(priceDifference*-1).toString() + ' gesunken'),
       );
       print('found new price on ' + product.Url);
-      pc.save();
     });
+    pc.save();
   }
 }
 

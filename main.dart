@@ -74,7 +74,8 @@ Future<void> checkForUpdatePrice(Product product) async{
   }
 }
 
-Future<void> checkForUpdatePriceTimer(Product product) async {
+void checkForUpdatePriceTimer(Product product) {
+  print('setup timer');
   Timer.periodic(Duration(minutes: 1), (Timer timer){
     print('initialize automatic check attempt');
     checkForUpdatePrice(product);

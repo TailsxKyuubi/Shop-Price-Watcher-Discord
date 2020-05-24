@@ -108,6 +108,7 @@ addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
   Product product = await Product.create(url.scheme +'://'+url.host+url.path);
   product.addChannel(int.tryParse(channel.id.id));
   pc.collection.add(product);
+  checkForUpdatePriceTimer(product);
   channel.send(content: 'Produkt wurde hinzugefügt');
   pc.save();
 }

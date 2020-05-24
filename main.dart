@@ -36,10 +36,9 @@ initiateTimer() async{
   DateTime now = DateTime.now();
   pc.collection.forEach((product){
     DateTime firstRecordTime = product.getPriceHistory().first.getRecordTime();
-    firstRecordTime.hour;
-    firstRecordTime.minute;
+
     DateTime startTime;
-    if(firstRecordTime.hour < now.hour || firstRecordTime.hour == now.hour && firstRecordTime.minute <= now.minute){
+    if( ( firstRecordTime.hour < now.hour || firstRecordTime.hour == now.hour && firstRecordTime.minute <= now.minute ) && now.day == DateTime.now().day ){
       now = now.add(Duration(days: 1));
     }
     startTime = DateTime(
@@ -50,7 +49,7 @@ initiateTimer() async{
         firstRecordTime.minute
     );
     print('Initialised Product');
-    print('Next Planned Update' + startTime.day.toString() + '.' + startTime.month.toString() + '.'+startTime.year.toString() + ' ' + startTime.hour.toString() + ':' + startTime.minute.toString());
+    print('Next Planned Update ' + startTime.day.toString() + '.' + startTime.month.toString() + '.'+startTime.year.toString() + ' ' + startTime.hour.toString() + ':' + startTime.minute.toString());
     Timer(now.difference(startTime), (){
       checkForUpdatePrice(product);
       checkForUpdatePriceTimer(product);

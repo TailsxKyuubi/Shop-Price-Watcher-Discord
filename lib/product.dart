@@ -40,6 +40,7 @@ class Product {
 
   // returns true if the price changed
   Future<bool> updatePrice() async{
+    print('update price');
     double newPrice = await this.retrievePrice();
     ProductHistory historyObject = ProductHistory(newPrice, DateTime.now());
     bool difference = _priceHistory.last.getPrice() != newPrice;

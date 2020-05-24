@@ -58,8 +58,8 @@ initiateTimer() async{
 }
 
 Future<void> checkForUpdatePrice(Product product) async{
+  print('checking for new price');
   if( await product.updatePrice() ){
-    print('checking for new price');
     product.getChannels().forEach((channelId) async{
       TextChannel channel = bot.channels[Snowflake(channelId)] as TextChannel;
       List<ProductHistory> history = product.getPriceHistory();

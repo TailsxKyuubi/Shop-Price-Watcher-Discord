@@ -50,10 +50,10 @@ initiateTimer() async{
     );
     print('Initialised Product');
     print('Next Planned Update ' + startTime.day.toString() + '.' + startTime.month.toString() + '.'+startTime.year.toString() + ' ' + startTime.hour.toString() + ':' + startTime.minute.toString());
-    //Timer(now.difference(startTime), (){
-      //checkForUpdatePrice(product);
+    Timer(now.difference(startTime), (){
+      checkForUpdatePrice(product);
       checkForUpdatePriceTimer(product);
-    //});
+    });
   });
 }
 
@@ -77,9 +77,8 @@ Future<void> checkForUpdatePrice(Product product) async{
 void checkForUpdatePriceTimer(Product product) async {
   print('setup timer');
   // running the loop until the bots stops
-  Timer.periodic(Duration(minutes: 1), (timer) {
+  Timer.periodic(Duration(hours: 6), (timer) {
     print('initialize automatic check attempt');
-    //await Future.delayed(Duration(minutes: 1));
     checkForUpdatePrice(product);
   });
 }

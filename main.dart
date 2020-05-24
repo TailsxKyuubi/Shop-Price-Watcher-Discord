@@ -59,7 +59,7 @@ initiateTimer() async{
 
 Future<void> checkForUpdatePrice(Product product) async{
   if( await product.updatePrice() ){
-    print('checking for new price on ' + product.Url);
+    print('checking for new price');
     product.getChannels().forEach((channelId) async{
       TextChannel channel = bot.channels[Snowflake(channelId)] as TextChannel;
       List<ProductHistory> history = product.getPriceHistory();
@@ -68,14 +68,15 @@ Future<void> checkForUpdatePrice(Product product) async{
         content: "Das Produkt mit der URL: " + product.getUrl() + " hat einen neuen Preis. \n"+
             "Der Preis ist um " + (priceDifference > 0?priceDifference.toString() + ' gestiegen':(priceDifference*-1).toString() + ' gesunken'),
       );
-      print('found new ');
+      print('found new price on ' + product.Url);
       pc.save();
     });
   }
 }
 
 Future<void> checkForUpdatePriceTimer(Product product) async {
-  Timer.periodic(Duration(minutes: 5), (Timer timer) async {
+  Timer.periodic(Duration(minutes: 1), (Timer timer){
+    print('initialize automatic check attempt');
     checkForUpdatePrice(product);
   });
 }

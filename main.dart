@@ -50,15 +50,16 @@ initiateTimer() async{
     );
     print('Initialised Product');
     print('Next Planned Update ' + startTime.day.toString() + '.' + startTime.month.toString() + '.'+startTime.year.toString() + ' ' + startTime.hour.toString() + ':' + startTime.minute.toString());
-    Timer(now.difference(startTime), (){
-      checkForUpdatePrice(product);
+    //Timer(now.difference(startTime), (){
+      //checkForUpdatePrice(product);
       checkForUpdatePriceTimer(product);
-    });
+    //});
   });
 }
 
 Future<void> checkForUpdatePrice(Product product) async{
   if( await product.updatePrice() ){
+    print('checking for new price on ' + product.Url);
     product.getChannels().forEach((channelId) async{
       TextChannel channel = bot.channels[Snowflake(channelId)] as TextChannel;
       List<ProductHistory> history = product.getPriceHistory();
@@ -67,13 +68,14 @@ Future<void> checkForUpdatePrice(Product product) async{
         content: "Das Produkt mit der URL: " + product.getUrl() + " hat einen neuen Preis. \n"+
             "Der Preis ist um " + (priceDifference > 0?priceDifference.toString() + ' gestiegen':(priceDifference*-1).toString() + ' gesunken'),
       );
+      print('found new ');
       pc.save();
     });
   }
 }
 
 Future<void> checkForUpdatePriceTimer(Product product) async {
-  Timer.periodic(Duration(hours: 2), (Timer timer) async {
+  Timer.periodic(Duration(minutes: 5), (Timer timer) async {
     checkForUpdatePrice(product);
   });
 }

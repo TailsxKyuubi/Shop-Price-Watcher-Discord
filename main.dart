@@ -50,22 +50,32 @@ initiateTimer() async{
         firstRecordTime.minute
     );
     print('Initialised Product');
+    print('Next Planned Update' + startTime.day.toString() + '.' + startTime.month.toString() + '.'+startTime.year.toString() + ' ' + startTime.hour.toString() + ':' + startTime.minute.toString());
     Timer(now.difference(startTime), (){
-      Timer.periodic(Duration(days: 1), (Timer timer) async{
-        if(await product.updatePrice()){
-          product.getChannels().forEach((channelId) async{
-            TextChannel channel = bot.channels[Snowflake(channelId)] as TextChannel;
-            List<ProductHistory> history = product.getPriceHistory();
-            double priceDifference = history[(history.length - 2)].getPrice() - history.last.getPrice();
-            channel.send(
-              content: "Das Produkt mit der URL: " + product.getUrl() + " hat einen neuen Preis. \n"+
-              "Der Preis ist um " + (priceDifference > 0?priceDifference.toString() + ' gestiegen':(priceDifference*-1).toString() + ' gesunken'),
-            );
-            pc.save();
-          });
-        }
-      });
+      checkForUpdatePrice(product);
+      checkForUpdatePriceTimer(product);
     });
+  });
+}
+
+Future<void> checkForUpdatePrice(Product product) async{
+  if( await product.updatePrice() ){
+    product.getChannels().forEach((channelId) async{
+      TextChannel channel = bot.channels[Snowflake(channelId)] as TextChannel;
+      List<ProductHistory> history = product.getPriceHistory();
+      double priceDifference = history[(history.length - 2)].getPrice() - history.last.getPrice();
+      channel.send(
+        content: "Das Produkt mit der URL: " + product.getUrl() + " hat einen neuen Preis. \n"+
+            "Der Preis ist um " + (priceDifference > 0?priceDifference.toString() + ' gestiegen':(priceDifference*-1).toString() + ' gesunken'),
+      );
+      pc.save();
+    });
+  }
+}
+
+Future<void> checkForUpdatePriceTimer(Product product) async {
+  Timer.periodic(Duration(hours: 2), (Timer timer) async {
+    checkForUpdatePrice(product);
   });
 }
 

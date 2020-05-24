@@ -70,8 +70,8 @@ Future<void> checkForUpdatePrice(Product product) async{
       );
       print('found new price on ' + product.Url);
     });
-    pc.save();
   }
+  pc.save();
 }
 
 void checkForUpdatePriceTimer(Product product) async {
@@ -105,12 +105,29 @@ addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
       jsonFile.createSync(recursive: true);
     }
   }
-  Product product = await Product.create(url.scheme +'://'+url.host+url.path);
-  product.addChannel(int.tryParse(channel.id.id));
-  pc.collection.add(product);
-  checkForUpdatePriceTimer(product);
-  channel.send(content: 'Produkt wurde hinzugefügt');
-  pc.save();
+  String link = url.scheme +'://'+url.host+url.path;
+  bool productExists = false;
+  pc.collection.forEach((Product product) {
+    if(product.Url == link){
+      productExists = true;
+      if(product.getChannels().indexOf(int.tryParse(channel.id.id)) == -1){
+        channel.send(content: 'Dieses Produkt wurde bereits eingetragen');
+      }else{
+        product.addChannel(int.tryParse(channel.id.id));
+        channel.send(content: 'Dieses Produkt wurde diesem Channel hinzugefügt');
+        pc.save();
+      }
+    }
+
+  });
+  if(!productExists) {
+    Product product = await Product.create(link);
+    product.addChannel(int.tryParse(channel.id.id));
+    pc.collection.add(product);
+    checkForUpdatePriceTimer(product);
+    channel.send(content: 'Produkt wurde hinzugefügt');
+    pc.save();
+  }
 }
 
 Future<bool> checkRightstufPage(Uri url) async {

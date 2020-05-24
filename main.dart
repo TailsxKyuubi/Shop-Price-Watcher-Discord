@@ -74,12 +74,12 @@ Future<void> checkForUpdatePrice(Product product) async{
   }
 }
 
-void checkForUpdatePriceTimer(Product product) {
+void checkForUpdatePriceTimer(Product product) async {
   print('setup timer');
   // running the loop until the bots stops
   while(true){
     print('initialize automatic check attempt');
-    Future.delayed(Duration(minutes: 1));
+    await Future.delayed(Duration(minutes: 1));
     checkForUpdatePrice(product);
   };
 }

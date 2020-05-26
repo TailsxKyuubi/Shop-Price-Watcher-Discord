@@ -36,7 +36,7 @@ class Product {
     Document document = parse(res.body);
     Element form = document.getElementById('product-details-full-form');
     List<Element> price_elements = form.getElementsByClassName('product-views-price-lead');
-    print(price_elements);
+    print(price_elements[0].attributes['data-rate']);
     double price = double.tryParse(price_elements[0].attributes['data-rate']);
     return price;
   }

@@ -33,10 +33,10 @@ class Product {
     http.Response res = await http.get(Url,headers: {
       'Cache-Control': 'no-cache'
     });
-    print(res.body);
     Document document = parse(res.body);
     Element form = document.getElementById('product-details-full-form');
     List<Element> price_elements = form.getElementsByClassName('product-views-price-lead');
+    print(price_elements);
     double price = double.tryParse(price_elements[0].attributes['data-rate']);
     return price;
   }

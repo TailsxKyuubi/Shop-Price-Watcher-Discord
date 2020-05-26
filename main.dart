@@ -50,10 +50,10 @@ initiateTimer() async{
     );
     print('Initialised Product');
     print('Next Planned Update ' + startTime.day.toString() + '.' + startTime.month.toString() + '.'+startTime.year.toString() + ' ' + startTime.hour.toString() + ':' + startTime.minute.toString());
-    //Timer(now.difference(startTime), (){
+    Timer(now.difference(startTime), (){
       checkForUpdatePrice(product);
       checkForUpdatePriceTimer(product);
-    //});
+    });
   });
 }
 

@@ -1,9 +1,6 @@
 import 'dart:convert';
-import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
-import 'package:html/dom.dart';
 import 'package:rightstuf_price_watcher/product_history.dart';
-import 'package:dio/dio.dart';
 
 class Product {
   String Url;
@@ -31,16 +28,11 @@ class Product {
   }
 
   Future<double> retrievePrice() async {
-    /*http.Response res = await http.get(Url,headers: {
-      'Cache-Control': 'no-cache'
-    });*/
-    Dio dio = new Dio();
-    Response res = await dio.get(Url);
-    Document document = parse(res.data);
-    Element form = document.getElementById('product-details-full-form');
-    List<Element> price_elements = form.getElementsByClassName('product-views-price-lead');
-    print(price_elements[0].attributes['data-rate']);
-    double price = double.tryParse(price_elements[0].attributes['data-rate']);
+    String path = Uri.parse(Url).path.substring(1);
+    http.Response res = await http.get('https://www.rightstufanime.com/api/items?country=US&currency=USD&fieldset=details&include=facets&language=en&pricelevel=5&url='+path);
+    Map dataList = jsonDecode(res.body);
+    double price = dataList['items'][0]['onlinecustomerprice_detail']['onlinecustomerprice'];
+    print(price);
     return price;
   }
 

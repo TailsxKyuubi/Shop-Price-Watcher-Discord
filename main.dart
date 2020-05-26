@@ -50,10 +50,10 @@ initiateTimer() async{
     );
     print('Initialised Product');
     print('Next Planned Update ' + startTime.day.toString() + '.' + startTime.month.toString() + '.'+startTime.year.toString() + ' ' + startTime.hour.toString() + ':' + startTime.minute.toString());
-    //Timer(now.difference(startTime), (){
+    Timer(now.difference(startTime), (){
       checkForUpdatePrice(product);
       checkForUpdatePriceTimer(product);
-    //});
+    });
   });
 }
 
@@ -61,12 +61,16 @@ Future<void> checkForUpdatePrice(Product product) async{
   print('checking for new price');
   if( await product.updatePrice() ){
     product.getChannels().forEach((channelId) async{
-      TextChannel channel = bot.channels[Snowflake(channelId)] as TextChannel;
+      TextChannel channel = await bot.getChannel(Snowflake(channelId)) as TextChannel;
+      print(channel);
       List<ProductHistory> history = product.getPriceHistory();
-      double priceDifference = history[(history.length - 2)].getPrice() - history.last.getPrice();
+      double oldPrice = history[(history.length - 2)].getPrice();
+      double newPrice = history.last.getPrice();
+      double priceDifference = oldPrice - newPrice;
+      priceDifference = priceDifference.truncateToDouble();
       channel.send(
         content: "Das Produkt mit der URL: " + product.getUrl() + " hat einen neuen Preis. \n"+
-            "Der Preis ist um " + (priceDifference > 0?priceDifference.toString() + ' gestiegen':(priceDifference*-1).toString() + ' gesunken'),
+            "Der Preis ist um " + (priceDifference > 0?priceDifference.toString().replaceAll('.', ',') + product.currency + ' gestiegen':(priceDifference*-1).toString().replaceAll('.', ',') + product.currency + ' gesunken'),
       );
       print('found new price on ' + product.Url);
     });

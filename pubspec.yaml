@@ -9,7 +9,6 @@ dependencies:
       url: git://github.com/l7ssha/nyxx.git
       ref: development
   http: ^0.12.1
-  dio: ^3.0.9
 
 environment:
   sdk: '>=2.1.0 <3.0.0'

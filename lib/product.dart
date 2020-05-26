@@ -30,7 +30,9 @@ class Product {
   }
 
   Future<double> retrievePrice() async {
-    http.Response res = await http.get(Url);
+    http.Response res = await http.get(Url,headers: {
+      'Cache-Control': 'no-cache'
+    });
     Document document = parse(res.body);
     Element form = document.getElementById('product-details-full-form');
     List<Element> price_elements = form.getElementsByClassName('product-views-price-lead');

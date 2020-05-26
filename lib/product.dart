@@ -3,6 +3,7 @@ import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart';
 import 'package:rightstuf_price_watcher/product_history.dart';
+import 'package:dio/dio.dart';
 
 class Product {
   String Url;
@@ -30,10 +31,12 @@ class Product {
   }
 
   Future<double> retrievePrice() async {
-    http.Response res = await http.get(Url,headers: {
+    /*http.Response res = await http.get(Url,headers: {
       'Cache-Control': 'no-cache'
-    });
-    Document document = parse(res.body);
+    });*/
+    Dio dio = new Dio();
+    Response res = await dio.get(Url);
+    Document document = parse(res.data);
     Element form = document.getElementById('product-details-full-form');
     List<Element> price_elements = form.getElementsByClassName('product-views-price-lead');
     print(price_elements[0].attributes['data-rate']);

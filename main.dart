@@ -41,6 +41,7 @@ initiateTimer() async{
     if( ( firstRecordTime.hour < now.hour || firstRecordTime.hour == now.hour && firstRecordTime.minute <= now.minute ) && now.day == DateTime.now().day ){
       now = now.add(Duration(days: 1));
     }
+    print(now.day);
     startTime = DateTime(
         now.year,
         now.month,
@@ -50,7 +51,13 @@ initiateTimer() async{
     );
     print('Initialised Product');
     print('Next Planned Update ' + startTime.day.toString() + '.' + startTime.month.toString() + '.'+startTime.year.toString() + ' ' + startTime.hour.toString() + ':' + startTime.minute.toString());
-    Timer(now.difference(startTime), (){
+    Duration timeDifference;
+    if(firstRecordTime.hour < now.hour || firstRecordTime.hour == now.hour && firstRecordTime.minute <= now.minute){
+      timeDifference = now.difference(startTime);
+    }else{
+      timeDifference = startTime.difference(now);
+    }
+    Timer(timeDifference, (){
       checkForUpdatePrice(product);
       checkForUpdatePriceTimer(product);
     });

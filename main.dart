@@ -73,7 +73,7 @@ Future<void> checkForUpdatePrice(Product product) async{
       List<ProductHistory> history = product.getPriceHistory();
       double oldPrice = history[(history.length - 2)].getPrice();
       double newPrice = history.last.getPrice();
-      double priceDifference = oldPrice - newPrice;
+      double priceDifference = newPrice - oldPrice;
       priceDifference = priceDifference.truncateToDouble();
       channel.send(
         content: "Das Produkt mit der URL: " + product.getUrl() + " hat einen neuen Preis. \n"+

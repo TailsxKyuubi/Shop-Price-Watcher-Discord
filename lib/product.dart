@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:rightstuf_price_watcher/config.dart';
 import 'package:rightstuf_price_watcher/product_history.dart';
 
-class Product {
+abstract class Product {
   String Url;
   List<ProductHistory> _priceHistory = [];
   List<int> _channels = [];
@@ -27,14 +27,9 @@ class Product {
     _channels.add(channelId);
   }
 
-  Future<double> retrievePrice() async {
-    String path = Uri.parse(Url).path.substring(1);
-    http.Response res = await http.get('https://www.rightstufanime.com/api/items?country=US&currency=USD&fieldset=details&include=facets&language=en&pricelevel=5&url='+path);
-    Map dataList = jsonDecode(res.body);
-    double price = dataList['items'][0]['onlinecustomerprice_detail']['onlinecustomerprice'];
-    print(price);
-    return price;
-  }
+  Future<double> retrievePrice();
+
+  Future<bool> check(String url);
 
   // returns true if the price changed
   Future<bool> updatePrice() async{
@@ -60,9 +55,12 @@ class Product {
   }
 
   static Future<Product> create( String url ) async {
-    Product newProduct = Product();
     Uri uri = Uri.tryParse(url);
-    if(uri.host == 'www.rightstufanime.com' && uri.path != '/'){
+    if( config['supportedHosts'].indexOf(uri.host) == -1 ){
+      return null;
+    }
+    Product newProduct = config['ShopCollection'].getInstanceFromShop(uri.host);
+    if(await newProduct.check(url)) {
       newProduct.Url = 'https://' + uri.host + uri.path;
       DateTime now = DateTime.now();
       double price = await newProduct.retrievePrice();
@@ -74,7 +72,7 @@ class Product {
   }
 
   static Product createFromData( String url, List<int> channels, List<ProductHistory> productHistory ){
-    Product product = Product();
+    Product product = config['ShopCollection'].getInstanceFromShop(Uri.parse(url).host);
     product.Url = url;
     product._channels = channels;
     product._priceHistory = productHistory;

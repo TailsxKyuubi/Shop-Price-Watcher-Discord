@@ -6,11 +6,13 @@ import 'package:html/dom.dart';
 import 'package:nyxx/Vm.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:http/http.dart' as http;
+import 'dart:mirrors';
 import 'package:rightstuf_price_watcher/product_history.dart';
 
-import 'lib/config.dart';
+import 'package:rightstuf_price_watcher/config.dart';
 import 'lib/ProductCollection.dart';
 import 'package:rightstuf_price_watcher/product.dart';
+import 'package:rightstuf_price_watcher/shops/rightstuffanime.dart';
 ProductCollection pc;
 Nyxx bot;
 
@@ -22,8 +24,17 @@ void main(){
     Map configJson = jsonDecode(configJsonString);
     loadConfig(configJson);
     print('loaded config');
+
+    // Add Pages to Shop Mapping
+    ClassMirror rightstufanime = reflectClass(RightStufAnimeProduct);
+    config['ShopCollection'].addShop('www.rightstufanime.com', rightstufanime);
+    print('Shops loaded');
+
+    // Initiate Bot
     bot = NyxxVm(config['discord-token'],ignoreExceptions: false);
     bot.onMessageReceived.listen(MessageReceivedHandler);
+
+
     pc = ProductCollection();
     initiateTimer();
   }else{
@@ -109,12 +120,6 @@ addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
   if(url.host != 'www.rightstufanime.com'){
     channel.send(content: 'the url isn\'t from rightstuf');
     return;
-  }
-  if(await checkRightstufPage(url)){
-    File jsonFile = new File('db/db.json');
-    if(!jsonFile.existsSync()){
-      jsonFile.createSync(recursive: true);
-    }
   }
   String link = url.scheme +'://'+url.host+url.path;
   bool productExists = false;

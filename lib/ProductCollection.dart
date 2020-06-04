@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:rightstuf_price_watcher/product.dart';
 import 'package:rightstuf_price_watcher/product_history.dart';
+import 'package:path/path.dart';
 
 ProductCollection productCollection;
 
@@ -41,7 +42,8 @@ class ProductCollection {
         List<int> channels;
         List<ProductHistory> productHistory;
         fileList.forEach(( FileSystemEntity file ) {
-          if(file.path.split('/').last.split('~') == 2) {
+          if(basename(file.path).split('~').length == 2) {
+            print('loading ' + file.path.split('/').last);
             channels = [];
             productHistory = [];
             dbFile = File(file.path);
@@ -50,12 +52,13 @@ class ProductCollection {
               channels.add(channelId);
             });
             dbContent['priceHistory'].forEach((productHistoryObject) {
-              productHistory.add(new ProductHistory(
-                  double.tryParse(productHistoryObject['price']),
-                  DateTime.parse(productHistoryObject['recordTime'])));
+              productHistory.add(new ProductHistory(double.tryParse(productHistoryObject['price']), DateTime.parse(productHistoryObject['recordTime'])));
             });
             Product tmpProduct = Product.createFromData(
-                dbContent['url'].toString(), channels, productHistory);
+                dbContent['url'].toString(), channels, productHistory,
+                sku: dbContent['sku'],
+                title: dbContent['title'],
+            );
             collection.add(tmpProduct);
           }
         });

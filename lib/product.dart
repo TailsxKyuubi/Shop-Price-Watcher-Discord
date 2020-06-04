@@ -54,6 +54,8 @@ abstract class Product {
     });
     Map tmp = {
       'url': this.Url,
+      'sku': this.sku,
+      'title': this.title,
       'channels': this._channels,
       'priceHistory': historyObjects
     };
@@ -83,11 +85,28 @@ abstract class Product {
     return null;
   }
 
-  static Product createFromData( String url, List<int> channels, List<ProductHistory> productHistory ){
+  static Product createFromData( String url, List<int> channels, List<ProductHistory> productHistory,{String title=null, String sku=null} ){
+    print('importing product');
     Product product = config['ShopCollection'].getInstanceFromShop(Uri.parse(url).host);
     product.Url = url;
     product._channels = channels;
     product._priceHistory = productHistory;
+    if(title == null){
+      product.retrieveTitle().then((String value){
+        product.title = value;
+        print(product.toJson());
+      });
+    }else{
+      product.title = title;
+    }
+    if(sku == null){
+      product.retrieveSKU().then((String value){
+        product.sku = value;
+        print(product.toJson());
+      });
+    }else{
+      product.sku = sku;
+    }
     return product;
   }
 }

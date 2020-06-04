@@ -93,7 +93,7 @@ Future<void> checkForUpdatePrice(Product product) async{
       print('found new price on ' + product.Url);
     });
   }
-  pc.save();
+  pc.save( product );
 }
 
 void checkForUpdatePriceTimer(Product product) async {
@@ -131,7 +131,7 @@ addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
       }else{
         product.addChannel(int.tryParse(channel.id.id));
         channel.send(content: 'Dieses Produkt wurde diesem Channel hinzugefügt');
-        pc.save();
+        pc.save( product );
       }
     }
 
@@ -142,19 +142,6 @@ addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
     pc.collection.add(product);
     checkForUpdatePriceTimer(product);
     channel.send(content: 'Produkt wurde hinzugefügt');
-    pc.save();
-  }
-}
-
-Future<bool> checkRightstufPage(Uri url) async {
-  http.Response res = await http.get('https://'+url.host+url.path);
-  Document document = parse(res.body);
-  Element form = document.getElementById('product-details-full-form');
-  List<Element> price_elements = form.getElementsByClassName('product-views-price-lead');
-  double price = double.tryParse(price_elements[0].attributes['data-rate']);
-  if(price > 0){
-    return true;
-  }else{
-    return false;
+    pc.save( product );
   }
 }

@@ -7,6 +7,8 @@ abstract class Product {
   List<ProductHistory> _priceHistory = [];
   List<int> _channels = [];
   String currency = '\$';
+  String sku;
+  String title;
 
   List<ProductHistory> getPriceHistory(){
     return _priceHistory;
@@ -30,6 +32,10 @@ abstract class Product {
   Future<double> retrievePrice();
 
   Future<bool> check(String url);
+
+  Future<String> retrieveSKU();
+
+  Future<String> retrieveTitle();
 
   // returns true if the price changed
   Future<bool> updatePrice() async{
@@ -57,17 +63,21 @@ abstract class Product {
   static Future<Product> create( String url ) async {
     Uri uri = Uri.tryParse(url);
     if( config['supportedHosts'].indexOf(uri.host) == -1 ){
+      // TODO Write Exception for that
       return null;
     }
     Product newProduct = config['ShopCollection'].getInstanceFromShop(uri.host);
     if(await newProduct.check(url)) {
       newProduct.Url = 'https://' + uri.host + uri.path;
+      newProduct.sku = await newProduct.retrieveSKU();
+      newProduct.title = await newProduct.retrieveTitle();
       DateTime now = DateTime.now();
       double price = await newProduct.retrievePrice();
       ProductHistory firstPrice = ProductHistory(price,now);
       newProduct.addPriceToHistory(firstPrice);
       return newProduct;
     }
+    // TODO Write Exception for that
     return null;
   }
 

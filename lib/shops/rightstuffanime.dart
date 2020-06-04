@@ -21,12 +21,28 @@ class RightStufAnimeProduct extends Product {
     if(uri.path == '/'){
       return false;
     }
-    http.Response res = await http.get('https://www.rightstufanime.com/api/items?country=US&currency=USD&fieldset=details&include=facets&language=en&pricelevel=5&url='+uri.path);
+    http.Response res = await http.get('https://www.rightstufanime.com/api/items?country=US&currency=USD&fieldset=details&include=facets&language=en&pricelevel=5&url='+uri.path.substring(1));
     if(res.statusCode == 200){
       return true;
     } else {
       return false;
     }
+  }
+
+  @override
+  Future<String> retrieveSKU() async {
+    String path = Uri.parse(Url).path.substring(1);
+    http.Response res = await http.get('https://www.rightstufanime.com/api/items?country=US&currency=USD&fieldset=details&include=facets&language=en&pricelevel=5&url='+path);
+    Map dataList = jsonDecode(res.body);
+    return dataList['items'][0]['itemid'];
+  }
+
+  @override
+  Future<String> retrieveTitle() async {
+    String path = Uri.parse(Url).path.substring(1);
+    http.Response res = await http.get('https://www.rightstufanime.com/api/items?country=US&currency=USD&fieldset=details&include=facets&language=en&pricelevel=5&url='+path);
+    Map dataList = jsonDecode(res.body);
+    return dataList['items'][0]['displayname'];
   }
 
 }

@@ -94,7 +94,6 @@ abstract class Product {
     if(title == null){
       product.retrieveTitle().then((String value){
         product.title = value;
-        print(product.toJson());
       });
     }else{
       product.title = title;
@@ -102,7 +101,6 @@ abstract class Product {
     if(sku == null){
       product.retrieveSKU().then((String value){
         product.sku = value;
-        print(product.toJson());
       });
     }else{
       product.sku = sku;

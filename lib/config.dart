@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:rightstuf_price_watcher/shop_collection.dart';
 Map config = {
   'supportedHosts': [
-    'www.rightstufanime.com'
+    'www.rightstufanime.com',
+    'www.animeversand.com'
   ]
 };
 

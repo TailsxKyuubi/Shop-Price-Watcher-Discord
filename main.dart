@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
-import 'package:html/parser.dart' show parse;
-import 'package:html/dom.dart';
 import 'package:nyxx/Vm.dart';
 import 'package:nyxx/nyxx.dart';
-import 'package:http/http.dart' as http;
 import 'dart:mirrors';
 import 'package:rightstuf_price_watcher/product_history.dart';
 
@@ -13,6 +10,7 @@ import 'package:rightstuf_price_watcher/config.dart';
 import 'lib/ProductCollection.dart';
 import 'package:rightstuf_price_watcher/product.dart';
 import 'package:rightstuf_price_watcher/shops/rightstuffanime.dart';
+import 'package:rightstuf_price_watcher/shops/animeversand.dart';
 ProductCollection pc;
 Nyxx bot;
 
@@ -28,6 +26,8 @@ void main(){
     // Add Pages to Shop Mapping
     ClassMirror rightstufanime = reflectClass(RightStufAnimeProduct);
     config['ShopCollection'].addShop('www.rightstufanime.com', rightstufanime);
+    ClassMirror animeversand = reflectClass(AnimeVersandProduct);
+    config['ShopCollection'].addShop('www.animeversand.com', animeversand);
     print('Shops loaded');
 
     // Initiate Bot
@@ -117,10 +117,6 @@ addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
     return;
   }
   Uri url = Uri.parse(message.split(' ')[1]);
-  if(url.host != 'www.rightstufanime.com'){
-    channel.send(content: 'the url isn\'t from rightstuf');
-    return;
-  }
   String link = url.scheme +'://'+url.host+url.path;
   bool productExists = false;
   pc.collection.forEach((Product product) {

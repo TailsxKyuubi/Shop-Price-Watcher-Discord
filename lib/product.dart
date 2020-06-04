@@ -63,6 +63,7 @@ abstract class Product {
   static Future<Product> create( String url ) async {
     Uri uri = Uri.tryParse(url);
     if( config['supportedHosts'].indexOf(uri.host) == -1 ){
+      print('site not supported');
       // TODO Write Exception for that
       return null;
     }
@@ -77,6 +78,7 @@ abstract class Product {
       newProduct.addPriceToHistory(firstPrice);
       return newProduct;
     }
+    print('check failed');
     // TODO Write Exception for that
     return null;
   }

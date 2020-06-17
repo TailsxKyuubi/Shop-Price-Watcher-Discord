@@ -29,7 +29,7 @@ class ProductCollection {
         // Converting save format
         tmpProduct.title = await tmpProduct.retrieveTitle();
         tmpProduct.sku = await tmpProduct.retrieveSKU();
-        this.save(tmpProduct);
+        tmpProduct.save();
         collection.add(tmpProduct);
       });
     } else {
@@ -59,21 +59,11 @@ class ProductCollection {
                 sku: dbContent['sku'],
                 title: dbContent['title'],
             );
+            tmpProduct.initiateTimer();
             collection.add(tmpProduct);
           }
         });
       }
     }
-  }
-  void save( Product product ){
-    print('saving product');
-    List<String> domainArray = product.Url.split('.');
-    String shopName = domainArray[domainArray.length-2];
-    File db = File('db/'+shopName+'~'+product.sku+'.json');
-    if(!db.existsSync()){
-      db.createSync( recursive: true );
-    }
-    db.writeAsStringSync(product.toJson());
-    print('saved product');
   }
 }

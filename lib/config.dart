@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:nyxx/Vm.dart';
 import 'package:rightstuf_price_watcher/shop_collection.dart';
 Map config = {
   'supportedHosts': [
@@ -7,6 +8,7 @@ Map config = {
     'www.animeversand.com'
   ]
 };
+NyxxVm bot;
 
 loadConfig( Map configJson ){
   if(configJson['discord-token'] == null || configJson['discord-token'] == ''){

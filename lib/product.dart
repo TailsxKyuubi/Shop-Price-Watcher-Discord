@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:nyxx/nyxx.dart';
 import 'package:rightstuf_price_watcher/config.dart';
 import 'package:rightstuf_price_watcher/product_history.dart';
 
@@ -9,6 +12,7 @@ abstract class Product {
   String currency = '\$';
   String sku;
   String title;
+  Timer _timer;
 
   List<ProductHistory> getPriceHistory(){
     return _priceHistory;
@@ -29,9 +33,20 @@ abstract class Product {
     _channels.add(channelId);
   }
 
+  void initiateTimer(){
+    if(this._timer == null){
+      print('setup timer');
+      // running the loop until the bots stops
+      this._timer = Timer.periodic(Duration(hours: 6), (timer) {
+        print('initialize automatic check attempt');
+        this.checkForUpdatePrice();
+      });
+    }
+  }
+
   Future<double> retrievePrice();
 
-  Future<bool> check(String url);
+  Future<bool> check( String url );
 
   Future<String> retrieveSKU();
 
@@ -49,7 +64,7 @@ abstract class Product {
 
   String toJson(){
     List<Map> historyObjects = [];
-    this._priceHistory.forEach(( ProductHistory element){
+    this._priceHistory.forEach(( ProductHistory element ){
       historyObjects.add(element.asMap());
     });
     Map tmp = {
@@ -60,6 +75,38 @@ abstract class Product {
       'priceHistory': historyObjects
     };
     return jsonEncode(tmp);
+  }
+
+  Future<void> checkForUpdatePrice() async{
+    print('checking for new price from ' + this.title);
+    if( await this.updatePrice() ){
+      this.getChannels().forEach((channelId) async{
+        TextChannel channel = await bot.getChannel(Snowflake(channelId)) as TextChannel;
+        List<ProductHistory> history = this.getPriceHistory();
+        double oldPrice = history[(history.length - 2)].getPrice();
+        double newPrice = history.last.getPrice();
+        double priceDifference = newPrice - oldPrice;
+        priceDifference = priceDifference.truncateToDouble();
+        channel.send(
+          content: "Das Produkt " + this.title + " hat einen neuen Preis. \n"+
+              "Der Preis ist um " + (priceDifference > 0?priceDifference.toString().replaceAll('.', ',') + this.currency + ' gestiegen':(priceDifference*-1).toString().replaceAll('.', ',') + this.currency + ' gesunken'),
+        );
+        print('found new price on ' + this.Url);
+      });
+    }
+    this.save();
+  }
+
+  void save(){
+    print('saving product ' + this.sku);
+    List<String> domainArray = this.Url.split('.');
+    String shopName = domainArray[domainArray.length-2];
+    File db = File('db/'+shopName+'~'+this.sku+'.json');
+    if(!db.existsSync()){
+      db.createSync( recursive: true );
+    }
+    db.writeAsStringSync(this.toJson());
+    print('saved product');
   }
 
   static Future<Product> create( String url ) async {

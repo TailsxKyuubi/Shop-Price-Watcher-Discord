@@ -4,7 +4,6 @@ import 'dart:async';
 import 'package:nyxx/Vm.dart';
 import 'package:nyxx/nyxx.dart';
 import 'dart:mirrors';
-import 'package:rightstuf_price_watcher/product_history.dart';
 
 import 'package:rightstuf_price_watcher/config.dart';
 import 'lib/ProductCollection.dart';
@@ -12,7 +11,6 @@ import 'package:rightstuf_price_watcher/product.dart';
 import 'package:rightstuf_price_watcher/shops/rightstuffanime.dart';
 import 'package:rightstuf_price_watcher/shops/animeversand.dart';
 ProductCollection pc;
-Nyxx bot;
 
 void main(){
   print('starting up');
@@ -36,14 +34,14 @@ void main(){
 
 
     pc = ProductCollection();
-    initiateTimer();
+    planningTimer();
   }else{
     print('no config file found');
     exit(0);
   }
 }
 
-initiateTimer() async{
+planningTimer() async{
   DateTime now = DateTime.now();
   pc.collection.forEach((product){
     DateTime firstRecordTime = product.getPriceHistory().first.getRecordTime();
@@ -52,7 +50,6 @@ initiateTimer() async{
     if( ( firstRecordTime.hour < now.hour || firstRecordTime.hour == now.hour && firstRecordTime.minute <= now.minute ) && now.day == DateTime.now().day ){
       now = now.add(Duration(days: 1));
     }
-    print(now.day);
     startTime = DateTime(
         now.year,
         now.month,
@@ -69,42 +66,11 @@ initiateTimer() async{
       timeDifference = startTime.difference(now);
     }
     Timer(timeDifference, (){
-      checkForUpdatePrice(product);
-      checkForUpdatePriceTimer(product);
+      product.checkForUpdatePrice();
+      product.initiateTimer();
     });
   });
 }
-
-Future<void> checkForUpdatePrice(Product product) async{
-  print('checking for new price');
-  if( await product.updatePrice() ){
-    product.getChannels().forEach((channelId) async{
-      TextChannel channel = await bot.getChannel(Snowflake(channelId)) as TextChannel;
-      print(channel);
-      List<ProductHistory> history = product.getPriceHistory();
-      double oldPrice = history[(history.length - 2)].getPrice();
-      double newPrice = history.last.getPrice();
-      double priceDifference = newPrice - oldPrice;
-      priceDifference = priceDifference.truncateToDouble();
-      channel.send(
-        content: "Das Produkt mit der URL: " + product.getUrl() + " hat einen neuen Preis. \n"+
-            "Der Preis ist um " + (priceDifference > 0?priceDifference.toString().replaceAll('.', ',') + product.currency + ' gestiegen':(priceDifference*-1).toString().replaceAll('.', ',') + product.currency + ' gesunken'),
-      );
-      print('found new price on ' + product.Url);
-    });
-  }
-  pc.save( product );
-}
-
-void checkForUpdatePriceTimer(Product product) async {
-  print('setup timer');
-  // running the loop until the bots stops
-  Timer.periodic(Duration(hours: 6), (timer) {
-    print('initialize automatic check attempt');
-    checkForUpdatePrice(product);
-  });
-}
-
 MessageReceivedHandler( event ){
   if(event.message.content.split(' ')[0] == '!addWatcher'){
     addWatcherPage(event.message.content,event.message.channel, event.message.guild);
@@ -127,7 +93,7 @@ addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
       }else{
         product.addChannel(int.tryParse(channel.id.id));
         channel.send(content: 'Dieses Produkt wurde diesem Channel hinzugefügt');
-        pc.save( product );
+        product.save();
       }
     }
 
@@ -136,8 +102,8 @@ addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
     Product product = await Product.create(link);
     product.addChannel(int.tryParse(channel.id.id));
     pc.collection.add(product);
-    checkForUpdatePriceTimer(product);
+    product.initiateTimer();
     channel.send(content: 'Produkt wurde hinzugefügt');
-    pc.save( product );
+    product.save();
   }
 }

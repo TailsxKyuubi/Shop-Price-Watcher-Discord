@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:nyxx/Vm.dart';
-import 'package:rightstuf_price_watcher/shop_collection.dart';
+import 'package:discord_price_watcher/shop_collection.dart';
 Map config = {
   'supportedHosts': [
     'www.rightstufanime.com',

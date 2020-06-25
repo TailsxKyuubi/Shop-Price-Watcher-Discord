@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:rightstuf_price_watcher/product.dart';
-import 'package:rightstuf_price_watcher/product_history.dart';
+import 'package:discord_price_watcher/product.dart';
+import 'package:discord_price_watcher/product_history.dart';
 import 'package:path/path.dart';
 
 ProductCollection productCollection;

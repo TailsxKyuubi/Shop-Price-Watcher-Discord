@@ -1,6 +1,6 @@
-name: rightstuf_price_watcher
-description: A price watcher bot
-version: 0.0.1
+name: discord_price_watcher
+description: A discord price watcher bot
+version: 0.2.0
 
 dependencies:
   html:

@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:nyxx/nyxx.dart';
-import 'package:rightstuf_price_watcher/config.dart';
-import 'package:rightstuf_price_watcher/product_history.dart';
+import 'package:discord_price_watcher/config.dart';
+import 'package:discord_price_watcher/product_history.dart';
 
 abstract class Product {
   String Url;
@@ -95,6 +95,11 @@ abstract class Product {
       });
     }
     this.save();
+  }
+
+  void delete(){
+    this._timer.cancel();
+
   }
 
   void save(){

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:rightstuf_price_watcher/product.dart';
+import 'package:discord_price_watcher/product.dart';
 import 'package:http/http.dart' as http;
 
 class RightStufAnimeProduct extends Product {

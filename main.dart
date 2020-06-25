@@ -1,15 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
-import 'package:nyxx/Vm.dart';
-import 'package:nyxx/nyxx.dart';
 import 'dart:mirrors';
 
-import 'package:rightstuf_price_watcher/config.dart';
-import 'lib/ProductCollection.dart';
-import 'package:rightstuf_price_watcher/product.dart';
-import 'package:rightstuf_price_watcher/shops/rightstuffanime.dart';
-import 'package:rightstuf_price_watcher/shops/animeversand.dart';
+import 'package:nyxx/Vm.dart';
+import 'package:nyxx/nyxx.dart';
+
+import 'package:discord_price_watcher/config.dart';
+import 'package:discord_price_watcher/product_collection.dart';
+import 'package:discord_price_watcher/product.dart';
+import 'package:discord_price_watcher/shops/rightstuffanime.dart';
+import 'package:discord_price_watcher/shops/animeversand.dart';
 ProductCollection pc;
 
 void main(){

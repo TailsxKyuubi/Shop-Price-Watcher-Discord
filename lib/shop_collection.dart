@@ -1,6 +1,7 @@
 import 'dart:mirrors';
 
-import 'package:rightstuf_price_watcher/product.dart';
+import 'package:discord_price_watcher/product.dart';
+
 class ShopCollection {
   Map<String,ClassMirror> _shopMapping = {};
   addShop(String domain,ClassMirror className){

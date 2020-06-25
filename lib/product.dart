@@ -89,7 +89,8 @@ abstract class Product {
         priceDifference = priceDifference.truncateToDouble();
         channel.send(
           content: "Das Produkt " + this.title + " hat einen neuen Preis. \n"+
-              "Der Preis ist um " + (priceDifference > 0?priceDifference.toString().replaceAll('.', ',') + this.currency + ' gestiegen':(priceDifference*-1).toString().replaceAll('.', ',') + this.currency + ' gesunken'),
+              "Der Preis ist um " + (priceDifference > 0?priceDifference.toString().replaceAll('.', ',') + this.currency + ' gestiegen':(priceDifference*-1).toString().replaceAll('.', ',') + this.currency + ' gesunken') +
+              '\n Der neue Preis beträgt:' + newPrice.toString() + this.currency +'\n'+this.Url,
         );
         print('found new price on ' + this.Url);
       });

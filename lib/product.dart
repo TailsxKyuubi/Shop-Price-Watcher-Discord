@@ -12,6 +12,7 @@ abstract class Product {
   String currency = '\$';
   String sku;
   String title;
+  bool active = true;
   Timer _timer;
 
   List<ProductHistory> getPriceHistory(){
@@ -44,21 +45,27 @@ abstract class Product {
     }
   }
 
-  Future<double> retrievePrice();
+  Future<double> retrievePrice(String productData);
 
   Future<bool> check( String url );
 
-  Future<String> retrieveSKU();
+  Future<String> retrieveSKU(String productData);
 
-  Future<String> retrieveTitle();
+  Future<String> retrieveTitle(String productData);
+
+  Future<String> getProductData();
+
+  bool checkForPromo(String productData);
 
   // returns true if the price changed
   Future<bool> updatePrice() async{
     print('update price');
-    double newPrice = await this.retrievePrice();
+    String productData = await this.getProductData();
+    double newPrice = await this.retrievePrice(productData);
     ProductHistory historyObject = ProductHistory(newPrice, DateTime.now());
     bool difference = _priceHistory.last.getPrice() != newPrice;
     this.addPriceToHistory(historyObject);
+    this._priceHistory.last.activePromo = this.checkForPromo(productData);
     return difference;
   }
 
@@ -71,6 +78,7 @@ abstract class Product {
       'url': this.Url,
       'sku': this.sku,
       'title': this.title,
+      'active': active,
       'channels': this._channels,
       'priceHistory': historyObjects
     };
@@ -80,19 +88,25 @@ abstract class Product {
   Future<void> checkForUpdatePrice() async{
     print('checking for new price from ' + this.title);
     if( await this.updatePrice() ){
+      List<ProductHistory> history = this.getPriceHistory();
+      double oldPrice = history[(history.length - 2)].getPrice();
+      double newPrice = history.last.getPrice();
+      double priceDifference = newPrice - oldPrice;
+      priceDifference = priceDifference.truncateToDouble();
+      bool oldPromoStatus = history[(history.length - 2)].activePromo;
+      bool promoStatus = history.last.activePromo;
       this.getChannels().forEach((channelId) async{
         TextChannel channel = await bot.getChannel(Snowflake(channelId)) as TextChannel;
-        List<ProductHistory> history = this.getPriceHistory();
-        double oldPrice = history[(history.length - 2)].getPrice();
-        double newPrice = history.last.getPrice();
-        double priceDifference = newPrice - oldPrice;
-        priceDifference = priceDifference.truncateToDouble();
         channel.send(
           content: "Das Produkt " + this.title + " hat einen neuen Preis. \n"+
               "Der Preis ist um " + (priceDifference > 0?priceDifference.toString().replaceAll('.', ',') + this.currency + ' gestiegen':(priceDifference*-1).toString().replaceAll('.', ',') + this.currency + ' gesunken') +
               '\n Der neue Preis beträgt:' + newPrice.toString() + this.currency +'\n'+this.Url,
         );
         print('found new price on ' + this.Url);
+        if(oldPromoStatus != promoStatus){
+          channel.send(
+              content:'Das Produkt "' + this.title + '" ' +(promoStatus==true?' nimmt':'nicht mehr') + ' an einer Promoaktion teil');
+        }
       });
     }
     this.save();
@@ -100,13 +114,30 @@ abstract class Product {
 
   void delete(){
     this._timer.cancel();
-
+    this.active = false;
+    this.save();
   }
 
   void save(){
     print('saving product ' + this.sku);
-    List<String> domainArray = this.Url.split('.');
-    String shopName = domainArray[domainArray.length-2];
+    List<String> domainArray = Uri.parse(this.Url).host.split('.');
+    String shopName;
+    String tld = domainArray.last;
+    switch(tld){
+      case 'au':
+      case 'jp':
+      case 'uk':
+        if( domainArray[domainArray.length-2] == 'co' || domainArray[domainArray.length-2] == 'com' ){
+          shopName = domainArray[domainArray.length-3];
+        }else{
+          shopName = domainArray[domainArray.length-2];
+        }
+        break;
+      default:
+        shopName = domainArray[domainArray.length-2];
+        break;
+    }
+
     File db = File('db/'+shopName+'~'+this.sku+'.json');
     if(!db.existsSync()){
       db.createSync( recursive: true );
@@ -125,11 +156,13 @@ abstract class Product {
     Product newProduct = config['ShopCollection'].getInstanceFromShop(uri.host);
     if(await newProduct.check(url)) {
       newProduct.Url = 'https://' + uri.host + uri.path;
-      newProduct.sku = await newProduct.retrieveSKU();
-      newProduct.title = await newProduct.retrieveTitle();
+      String productData = await newProduct.getProductData();
+      newProduct.sku = await newProduct.retrieveSKU(productData);
+      newProduct.title = await newProduct.retrieveTitle(productData);
       DateTime now = DateTime.now();
-      double price = await newProduct.retrievePrice();
+      double price = await newProduct.retrievePrice(productData);
       ProductHistory firstPrice = ProductHistory(price,now);
+      firstPrice.activePromo = newProduct.checkForPromo(productData);
       newProduct.addPriceToHistory(firstPrice);
       return newProduct;
     }
@@ -138,26 +171,12 @@ abstract class Product {
     return null;
   }
 
-  static Product createFromData( String url, List<int> channels, List<ProductHistory> productHistory,{String title=null, String sku=null} ){
+  static Product createFromData( String url, List<int> channels, List<ProductHistory> productHistory,{String title=null, String sku=null,bool} ){
     print('importing product');
     Product product = config['ShopCollection'].getInstanceFromShop(Uri.parse(url).host);
     product.Url = url;
     product._channels = channels;
     product._priceHistory = productHistory;
-    if(title == null){
-      product.retrieveTitle().then((String value){
-        product.title = value;
-      });
-    }else{
-      product.title = title;
-    }
-    if(sku == null){
-      product.retrieveSKU().then((String value){
-        product.sku = value;
-      });
-    }else{
-      product.sku = sku;
-    }
     return product;
   }
 }

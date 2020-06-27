@@ -11,6 +11,7 @@ import 'package:discord_price_watcher/product_collection.dart';
 import 'package:discord_price_watcher/product.dart';
 import 'package:discord_price_watcher/shops/rightstuffanime.dart';
 import 'package:discord_price_watcher/shops/animeversand.dart';
+import 'package:discord_price_watcher/shops/jbhifi.dart';
 ProductCollection pc;
 
 void main(){
@@ -27,6 +28,8 @@ void main(){
     config['ShopCollection'].addShop('www.rightstufanime.com', rightstufanime);
     ClassMirror animeversand = reflectClass(AnimeVersandProduct);
     config['ShopCollection'].addShop('www.animeversand.com', animeversand);
+    ClassMirror jbhifi = reflectClass(JbHifiProduct);
+    config['ShopCollection'].addShop('www.jbhifi.com.au',jbhifi);
     print('Shops loaded');
 
     // Initiate Bot
@@ -72,10 +75,27 @@ planningTimer() async{
     });
   });
 }
-MessageReceivedHandler( event ){
+MessageReceivedHandler( MessageEvent event ){
   if(event.message.content.split(' ')[0] == '!addWatcher'){
     addWatcherPage(event.message.content,event.message.channel, event.message.guild);
+  }else if(event.message.content.split(' ')[0] == '!listProducts'){
+    listProductsFromChannel( event );
   }
+}
+
+listProductsFromChannel( MessageEvent event ){
+  int channelId = int.tryParse(event.message.channel.id.id);
+  String products = '';
+  var embed = EmbedBuilder();
+  int i = 0;
+  pc.collection.forEach( ( element ) {
+    if( element.getChannels().indexOf( channelId ) != -1 ){
+      i++;
+      products += i.toString()+') ' + element.title.trim() + '\n'+element.Url+'\n\n';
+    }
+  });
+  embed.addField(name: 'Liste Produkte', content: products);
+  event.message.channel.send(embed: embed);
 }
 
 addWatcherPage( String message, MessageChannel channel, Guild guild ) async {

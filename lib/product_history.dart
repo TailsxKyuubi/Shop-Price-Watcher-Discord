@@ -3,6 +3,7 @@ import 'helper.dart';
 
 class ProductHistory {
   double _price;
+  bool activePromo = false;
   DateTime _recordTime;
 
   ProductHistory( double price, DateTime recordTime ){
@@ -25,6 +26,7 @@ class ProductHistory {
         + toTwoDigit(this._recordTime.minute) + ':' + toTwoDigit(this._recordTime.second);
     return jsonEncode({
       'price': this._price.toString(),
+      'activePromo': activePromo,
       'recordTime': dateTime,
     });
   }
@@ -36,6 +38,7 @@ class ProductHistory {
         + toTwoDigit(this._recordTime.minute) + ':' + toTwoDigit(this._recordTime.second);
     return {
       'price': this._price.toString(),
+      'activePromo': activePromo,
       'recordTime': dateTime,
     };
   }

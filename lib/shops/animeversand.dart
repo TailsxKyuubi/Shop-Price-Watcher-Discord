@@ -22,24 +22,32 @@ class AnimeVersandProduct extends Product {
   }
 
   @override
-  Future<double> retrievePrice() async {
-    http.Response res = await http.get(this.Url);
-    Document html = parse(res.body);
+  Future<double> retrievePrice(String productData) async {
+    Document html = parse(productData);
     return double.tryParse(html.querySelector('meta[itemprop=price]').attributes['content']);
   }
 
   @override
-  Future<String> retrieveSKU() async {
-    http.Response res = await http.get(this.Url);
-    Document html = parse(res.body);
+  Future<String> retrieveSKU(String productData) async {
+    Document html = parse(productData);
     return html.querySelector('.base-info--entry.entry--sku > .entry--content').text;
   }
 
   @override
-  Future<String> retrieveTitle() async {
-    http.Response res = await http.get(this.Url);
-    Document html = parse(res.body);
+  Future<String> retrieveTitle(String productData) async {
+    Document html = parse(productData);
     return html.querySelector('h1.product--title[itemprop=name]').innerHtml;
+  }
+
+  @override
+  bool checkForPromo(String productData) {
+    return false;
+  }
+
+  @override
+  Future<String> getProductData() async {
+    http.Response res = await http.get(this.Url);
+    return res.body;
   }
 
 }

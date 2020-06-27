@@ -86,7 +86,13 @@ abstract class Product {
   }
 
   Future<void> checkForUpdatePrice() async{
-    print('checking for new price from ' + this.title);
+    try{
+      print('checking for new price from ' + this.title);
+    }catch(e){
+      print('failed to output server message for checking new price with title name');
+      print('trying now to output product title');
+      print(this.title);
+    }
     if( await this.updatePrice() ){
       List<ProductHistory> history = this.getPriceHistory();
       double oldPrice = history[(history.length - 2)].getPrice();

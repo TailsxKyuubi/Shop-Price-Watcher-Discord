@@ -38,7 +38,7 @@ class JbHifiProduct extends Product {
   @override
   Future<String> retrieveTitle(String productData) async {
     var html = parse(productData);
-    return html.querySelector('h1[itemprop=name]').attributes['content'];
+    return html.querySelector('h1[itemprop=name]').innerHtml;
   }
 
   @override

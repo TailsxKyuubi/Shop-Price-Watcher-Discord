@@ -179,12 +179,14 @@ abstract class Product {
     return null;
   }
 
-  static Product createFromData( String url, List<int> channels, List<ProductHistory> productHistory,{String title=null, String sku=null,bool} ){
+  static Product createFromData( String url, List<int> channels, List<ProductHistory> productHistory,{String title=null, String sku=null} ){
     print('importing product');
     Product product = config['ShopCollection'].getInstanceFromShop(Uri.parse(url).host);
     product.Url = url;
     product._channels = channels;
     product._priceHistory = productHistory;
+    product.title = title;
+    product.sku = sku;
     return product;
   }
 }

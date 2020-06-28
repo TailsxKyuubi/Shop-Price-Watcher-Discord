@@ -25,6 +25,7 @@ class ProductCollection {
           dbFile = File(file.path);
           Map dbContent = jsonDecode(dbFile.readAsStringSync());
           if(dbContent['active'] != null && !dbContent['active']){
+            print('product inactive');
             return;
           }
           dbContent['channels'].forEach((channelId) {

@@ -69,10 +69,10 @@ planningTimer() async{
     }else{
       timeDifference = startTime.difference(now);
     }
-    //Timer(timeDifference, (){
+    Timer(timeDifference, (){
       product.checkForUpdatePrice();
       product.initiateTimer();
-    //});
+    });
   });
 }
 MessageReceivedHandler( MessageEvent event ){

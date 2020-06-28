@@ -92,6 +92,8 @@ abstract class Product {
       print('failed to output server message for checking new price with title name');
       print('trying now to output product title');
       print(this.title);
+      print('trying to output sku');
+      print(this.sku);
     }
     if( await this.updatePrice() ){
       List<ProductHistory> history = this.getPriceHistory();

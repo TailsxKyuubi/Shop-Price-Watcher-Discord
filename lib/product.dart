@@ -95,22 +95,26 @@ abstract class Product {
       print('trying to output sku');
       print(this.sku);
     }
-    if( await this.updatePrice() ){
-      List<ProductHistory> history = this.getPriceHistory();
+    List<ProductHistory> history = this.getPriceHistory();
+    bool oldPromoStatus = history[(history.length - 2)].activePromo;
+    bool promoStatus = history.last.activePromo;
+    if( await this.updatePrice() || promoStatus != oldPromoStatus ){
+      history = this.getPriceHistory();
       double oldPrice = history[(history.length - 2)].getPrice();
       double newPrice = history.last.getPrice();
       double priceDifference = newPrice - oldPrice;
       priceDifference = priceDifference.truncateToDouble();
-      bool oldPromoStatus = history[(history.length - 2)].activePromo;
-      bool promoStatus = history.last.activePromo;
       this.getChannels().forEach((channelId) async{
         TextChannel channel = await bot.getChannel(Snowflake(channelId)) as TextChannel;
-        channel.send(
-          content: "Das Produkt " + this.title + " hat einen neuen Preis. \n"+
-              "Der Preis ist um " + (priceDifference > 0?priceDifference.toString().replaceAll('.', ',') + this.currency + ' gestiegen':(priceDifference*-1).toString().replaceAll('.', ',') + this.currency + ' gesunken') +
-              '\n Der neue Preis beträgt: ' + newPrice.toString() + this.currency +'\n'+this.Url,
-        );
-        print('found new price on ' + this.Url);
+        if(oldPrice != newPrice) {
+          channel.send(
+            content: "Das Produkt " + this.title + " hat einen neuen Preis. \n" +
+                "Der Preis ist um " + (priceDifference > 0.0 ? priceDifference.toString().replaceAll('.', ',') + this.currency + ' gestiegen': (priceDifference * -1).toString().replaceAll('.', ',') + this.currency + ' gesunken') +
+                '\n Der neue Preis beträgt: ' + newPrice.toString() +
+                this.currency + '\n' + this.Url,
+          );
+          print('found new price on ' + this.Url);
+        }
         if(oldPromoStatus != promoStatus){
           channel.send(
               content:'Das Produkt "' + this.title + '" ' +(promoStatus==true?' nimmt':'nicht mehr') + ' an einer Promoaktion teil');

@@ -53,7 +53,7 @@ planningTimer() async{
     DateTime startTime;
     Duration difference = now.difference(firstRecordTime);
     double intervalCount = difference.inHours % 24 / 6;
-    print(intervalCount);
+    //print(intervalCount);
 
     /*if( ( firstRecordTime.hour < now.hour || firstRecordTime.hour == now.hour && firstRecordTime.minute <= now.minute ) && now.day == DateTime.now().day ){
       now = now.add(Duration(days: 1));

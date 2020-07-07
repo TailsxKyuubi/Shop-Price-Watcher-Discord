@@ -46,14 +46,18 @@ void main(){
 }
 
 planningTimer() async{
-  DateTime now = DateTime.now();
+  DateTime now;
   pc.collection.forEach((product){
     DateTime firstRecordTime = product.getPriceHistory().first.getRecordTime();
-
+    now = DateTime.now();
     DateTime startTime;
-    if( ( firstRecordTime.hour < now.hour || firstRecordTime.hour == now.hour && firstRecordTime.minute <= now.minute ) && now.day == DateTime.now().day ){
+    Duration difference = now.difference(firstRecordTime);
+    double intervalCount = difference.inHours % 24 / 6;
+    print(intervalCount);
+
+    /*if( ( firstRecordTime.hour < now.hour || firstRecordTime.hour == now.hour && firstRecordTime.minute <= now.minute ) && now.day == DateTime.now().day ){
       now = now.add(Duration(days: 1));
-    }
+    }*/
     startTime = DateTime(
         now.year,
         now.month,
@@ -61,14 +65,15 @@ planningTimer() async{
         firstRecordTime.hour,
         firstRecordTime.minute
     );
+    int hours;
+    hours = (((24 / 6)-(intervalCount.ceil())) * 6).ceil();
+    startTime = startTime.add(Duration(hours: hours));
+    //startTime = startTime.subtract(Duration(days:1));
+    print(startTime);
+
     print('Initialised Product');
     print('Next Planned Update ' + startTime.day.toString() + '.' + startTime.month.toString() + '.'+startTime.year.toString() + ' ' + startTime.hour.toString() + ':' + startTime.minute.toString());
-    Duration timeDifference;
-    if(firstRecordTime.hour < now.hour || firstRecordTime.hour == now.hour && firstRecordTime.minute <= now.minute){
-      timeDifference = now.difference(startTime);
-    }else{
-      timeDifference = startTime.difference(now);
-    }
+    Duration timeDifference = startTime.difference(now);
     Timer(timeDifference, (){
       product.checkForUpdatePrice();
       product.initiateTimer();

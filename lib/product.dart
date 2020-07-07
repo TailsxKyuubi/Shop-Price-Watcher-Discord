@@ -96,20 +96,27 @@ abstract class Product {
       print(this.sku);
     }
     List<ProductHistory> history = this.getPriceHistory();
-    bool oldPromoStatus = history[(history.length - 2)].activePromo;
+    bool oldPromoStatus;
+    if(history.length > 1){
+      oldPromoStatus = history[(history.length - 2)].activePromo;
+    }else{
+      oldPromoStatus = false;
+    }
+
     bool promoStatus = history.last.activePromo;
     if( await this.updatePrice() || promoStatus != oldPromoStatus ){
       history = this.getPriceHistory();
       double oldPrice = history[(history.length - 2)].getPrice();
       double newPrice = history.last.getPrice();
       double priceDifference = newPrice - oldPrice;
-      priceDifference = priceDifference.truncateToDouble();
+      //priceDifference = priceDifference.truncateToDouble();
+      
       this.getChannels().forEach((channelId) async{
         TextChannel channel = await bot.getChannel(Snowflake(channelId)) as TextChannel;
         if(oldPrice != newPrice) {
           channel.send(
             content: "Das Produkt " + this.title + " hat einen neuen Preis. \n" +
-                "Der Preis ist um " + (priceDifference > 0.0 ? priceDifference.toString().replaceAll('.', ',') + this.currency + ' gestiegen': (priceDifference * -1).toString().replaceAll('.', ',') + this.currency + ' gesunken') +
+                "Der Preis ist um " + (priceDifference > 0.0 ? priceDifference.toStringAsPrecision(2).replaceAll('.', ',') + this.currency + ' gestiegen': (priceDifference * -1).toStringAsPrecision(2).replaceAll('.', ',') + this.currency + ' gesunken') +
                 '\n Der neue Preis beträgt: ' + newPrice.toString() +
                 this.currency + '\n' + this.Url,
           );

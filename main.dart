@@ -69,7 +69,7 @@ planningTimer() async{
     hours = (((24 / 6)-(intervalCount.ceil())) * 6).ceil();
     startTime = startTime.add(Duration(hours: hours));
     //startTime = startTime.subtract(Duration(days:1));
-    print(startTime);
+    //print(startTime);
 
     print('Initialised Product');
     print('Next Planned Update ' + startTime.day.toString() + '.' + startTime.month.toString() + '.'+startTime.year.toString() + ' ' + startTime.hour.toString() + ':' + startTime.minute.toString());

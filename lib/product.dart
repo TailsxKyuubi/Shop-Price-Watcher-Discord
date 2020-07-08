@@ -98,14 +98,16 @@ abstract class Product {
     List<ProductHistory> history = this.getPriceHistory();
     bool oldPromoStatus;
     if(history.length > 1){
-      oldPromoStatus = history[(history.length - 2)].activePromo;
+      oldPromoStatus = history.last.activePromo;
     }else{
       oldPromoStatus = false;
     }
 
+    bool updatedPrice = await this.updatePrice();
+    history = this.getPriceHistory();
+
     bool promoStatus = history.last.activePromo;
-    if( await this.updatePrice() || promoStatus != oldPromoStatus ){
-      history = this.getPriceHistory();
+    if( updatedPrice || promoStatus != oldPromoStatus ){
       double oldPrice = history[(history.length - 2)].getPrice();
       double newPrice = history.last.getPrice();
       double priceDifference = newPrice - oldPrice;

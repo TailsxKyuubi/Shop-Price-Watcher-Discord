@@ -53,7 +53,7 @@ planningTimer() async{
     now = DateTime.now();
     DateTime startTime;
     Duration difference = now.difference(firstRecordTime);
-    double intervalCount = difference.inHours % 24 / 6;
+    double intervalCount = difference.inHours % 24 / config['interval'];
 
     startTime = DateTime(
         now.year,
@@ -67,7 +67,7 @@ planningTimer() async{
       intervalCount = 1;
     }
 
-    hours = intervalCount.ceil() * 6;
+    hours = intervalCount.ceil() * config['interval'];
 
     startTime = startTime.add(Duration(hours: hours));
 

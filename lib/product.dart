@@ -40,7 +40,7 @@ abstract class Product {
     if(this._timer == null){
       Log.info('setup timer');
       // running the loop until the bots stops
-      this._timer = Timer.periodic(Duration(hours: 6), (timer) {
+      this._timer = Timer.periodic(Duration(hours: config['interval']), (timer) {
         Log.info('initialize automatic check attempt');
         this.checkForUpdatePrice();
       });

@@ -22,5 +22,11 @@ loadConfig( Map configJson ){
     ShopCollection sc = ShopCollection();
     config['ShopCollection'] = sc;
     config['discord-token'] = configJson['discord-token'];
+
+    if(configJson['interval'] is int && configJson['interval'] > 0 && configJson['interval'] < 25 ){
+      config['interval'] = configJson['interval'];
+    }else{
+      config['interval'] = 6;
+    }
   }
 }

@@ -53,7 +53,7 @@ planningTimer() async{
     now = DateTime.now();
     DateTime startTime;
     Duration difference = now.difference(firstRecordTime);
-    double intervalCount = difference.inHours % 24 / config['interval'];
+    double intervalCount = (difference.inHours % 24) / config['interval'];
 
     startTime = DateTime(
         now.year,
@@ -70,6 +70,9 @@ planningTimer() async{
     hours = intervalCount.ceil() * config['interval'];
 
     startTime = startTime.add(Duration(hours: hours));
+    if(now.isAfter(startTime)){
+      startTime = startTime.add(Duration(hours: config['interval']));
+    }
 
     Log.info('Initialised Product "' + product.title + '"');
     Log.info('Next Planned Update ' + startTime.day.toString() + '.' + startTime.month.toString() + '.'+startTime.year.toString() + ' ' + startTime.hour.toString() + ':' + startTime.minute.toString());

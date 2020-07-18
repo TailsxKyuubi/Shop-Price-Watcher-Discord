@@ -1,5 +1,5 @@
-#Shop Price Watcher for Discord
-##Installation
+# Shop Price Watcher for Discord
+## Installation
 1. Download the latest Dart SDK 
 2. Clone this repository
 3. Create a copy the example.config.json and name it config.json

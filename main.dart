@@ -63,10 +63,15 @@ planningTimer() async{
         firstRecordTime.minute
     );
     int hours;
-    hours = (((24 / 6)-(intervalCount.ceil())) * 6).ceil();
+    if(intervalCount < 1){
+      intervalCount = 1;
+    }
+
+    hours = intervalCount.ceil() * 6;
+
     startTime = startTime.add(Duration(hours: hours));
 
-    Log.info('Initialised Product');
+    Log.info('Initialised Product "' + product.title + '"');
     Log.info('Next Planned Update ' + startTime.day.toString() + '.' + startTime.month.toString() + '.'+startTime.year.toString() + ' ' + startTime.hour.toString() + ':' + startTime.minute.toString());
     Duration timeDifference = startTime.difference(now);
     Timer(timeDifference, (){

@@ -24,7 +24,9 @@ class Log {
       File( 'price-watcher.log' ).renameSync( 'price-watcher.log.1' );
       logFile.createSync();
     }
-    logFile.writeAsStringSync(fullMessage);
+    String content = logFile.readAsStringSync();
+    content += '\n'+fullMessage;
+    logFile.writeAsStringSync(content);
     print(fullMessage);
   }
 }

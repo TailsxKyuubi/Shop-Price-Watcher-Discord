@@ -9,3 +9,5 @@
 pubspec.lock
 config.json
 db/*
+price-watcher.log
+price-watcher.log.*

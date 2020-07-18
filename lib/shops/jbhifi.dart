@@ -43,7 +43,6 @@ class JbHifiProduct extends Product {
 
   @override
   Future<String> getProductData() async {
-    print(this.Url);
     http.Response res = await http.get(this.Url);
     return res.body;
   }

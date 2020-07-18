@@ -9,19 +9,20 @@ import 'package:nyxx/nyxx.dart';
 import 'package:discord_price_watcher/config.dart';
 import 'package:discord_price_watcher/product_collection.dart';
 import 'package:discord_price_watcher/product.dart';
+import 'package:discord_price_watcher/log.dart';
 import 'package:discord_price_watcher/shops/rightstuffanime.dart';
 import 'package:discord_price_watcher/shops/animeversand.dart';
 import 'package:discord_price_watcher/shops/jbhifi.dart';
 ProductCollection pc;
 
 void main(){
-  print('starting up');
+  Log.info('starting up');
   File configFile = new File('config.json');
   if(configFile.existsSync()){
     String configJsonString = configFile.readAsStringSync();
     Map configJson = jsonDecode(configJsonString);
     loadConfig(configJson);
-    print('loaded config');
+    Log.info('loaded config');
 
     // Add Pages to Shop Mapping
     ClassMirror rightstufanime = reflectClass(RightStufAnimeProduct);
@@ -30,7 +31,7 @@ void main(){
     config['ShopCollection'].addShop('www.animeversand.com', animeversand);
     ClassMirror jbhifi = reflectClass(JbHifiProduct);
     config['ShopCollection'].addShop('www.jbhifi.com.au',jbhifi);
-    print('Shops loaded');
+    Log.info('Shops loaded');
 
     // Initiate Bot
     bot = NyxxVm(config['discord-token'],ignoreExceptions: false);
@@ -40,7 +41,7 @@ void main(){
     pc = ProductCollection();
     planningTimer();
   }else{
-    print('no config file found');
+    Log.info('no config file found');
     exit(0);
   }
 }
@@ -53,11 +54,7 @@ planningTimer() async{
     DateTime startTime;
     Duration difference = now.difference(firstRecordTime);
     double intervalCount = difference.inHours % 24 / 6;
-    //print(intervalCount);
 
-    /*if( ( firstRecordTime.hour < now.hour || firstRecordTime.hour == now.hour && firstRecordTime.minute <= now.minute ) && now.day == DateTime.now().day ){
-      now = now.add(Duration(days: 1));
-    }*/
     startTime = DateTime(
         now.year,
         now.month,
@@ -68,11 +65,9 @@ planningTimer() async{
     int hours;
     hours = (((24 / 6)-(intervalCount.ceil())) * 6).ceil();
     startTime = startTime.add(Duration(hours: hours));
-    //startTime = startTime.subtract(Duration(days:1));
-    //print(startTime);
 
-    print('Initialised Product');
-    print('Next Planned Update ' + startTime.day.toString() + '.' + startTime.month.toString() + '.'+startTime.year.toString() + ' ' + startTime.hour.toString() + ':' + startTime.minute.toString());
+    Log.info('Initialised Product');
+    Log.info('Next Planned Update ' + startTime.day.toString() + '.' + startTime.month.toString() + '.'+startTime.year.toString() + ' ' + startTime.hour.toString() + ':' + startTime.minute.toString());
     Duration timeDifference = startTime.difference(now);
     Timer(timeDifference, (){
       product.checkForUpdatePrice();
@@ -105,7 +100,7 @@ listProductsFromChannel( MessageEvent event ){
 
 addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
   if(message.split(' ')[1] == null && message.split(' ')[1] == ''){
-    print('no url provided');
+    Log.info('no url provided');
     return;
   }
   Uri url = Uri.parse(message.split(' ')[1]);

@@ -5,12 +5,14 @@ import 'package:discord_price_watcher/product.dart';
 import 'package:discord_price_watcher/product_history.dart';
 import 'package:path/path.dart';
 
+import 'package:discord_price_watcher/log.dart';
+
 ProductCollection productCollection;
 
 class ProductCollection {
   List<Product> collection = [];
   ProductCollection(){
-    print('loading new database');
+    Log.info('loading new database');
     Directory DbDirectory = Directory('db');
     List<FileSystemEntity> fileList = DbDirectory.listSync( recursive: false, followLinks: false);
     if(DbDirectory.listSync( recursive: false, followLinks: false).length > 0){
@@ -19,13 +21,13 @@ class ProductCollection {
       List<ProductHistory> productHistory;
       fileList.forEach(( FileSystemEntity file ) {
         if(basename(file.path).split('~').length == 2) {
-          print('loading ' + file.path.split('/').last);
+          Log.info('loading ' + file.path.split('/').last);
           channels = [];
           productHistory = [];
           dbFile = File(file.path);
           Map dbContent = jsonDecode(dbFile.readAsStringSync());
           if(dbContent['active'] != null && !dbContent['active']){
-            print('product inactive');
+            Log.info('product inactive');
             return;
           }
           dbContent['channels'].forEach((channelId) {

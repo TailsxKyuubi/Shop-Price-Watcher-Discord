@@ -5,6 +5,8 @@ import 'package:nyxx/nyxx.dart';
 import 'package:discord_price_watcher/config.dart';
 import 'package:discord_price_watcher/product_history.dart';
 
+import 'package:discord_price_watcher/log.dart';
+
 abstract class Product {
   String Url;
   List<ProductHistory> _priceHistory = [];
@@ -36,10 +38,10 @@ abstract class Product {
 
   void initiateTimer(){
     if(this._timer == null){
-      print('setup timer');
+      Log.info('setup timer');
       // running the loop until the bots stops
       this._timer = Timer.periodic(Duration(hours: 6), (timer) {
-        print('initialize automatic check attempt');
+        Log.info('initialize automatic check attempt');
         this.checkForUpdatePrice();
       });
     }
@@ -59,7 +61,7 @@ abstract class Product {
 
   // returns true if the price changed
   Future<bool> updatePrice() async{
-    print('update price');
+    Log.info('update price');
     String productData = await this.getProductData();
     double newPrice = await this.retrievePrice(productData);
     ProductHistory historyObject = ProductHistory(newPrice, DateTime.now());
@@ -87,13 +89,13 @@ abstract class Product {
 
   Future<void> checkForUpdatePrice() async{
     try{
-      print('checking for new price from ' + this.title);
+      Log.info('checking for new price from ' + this.title);
     }catch(e){
-      print('failed to output server message for checking new price with title name');
-      print('trying now to output product title');
-      print(this.title);
-      print('trying to output sku');
-      print(this.sku);
+      Log.error('failed to output server message for checking new price with title name');
+      Log.error('trying now to output product title');
+      Log.error(this.title);
+      Log.error('trying to output sku');
+      Log.error(this.sku);
     }
     List<ProductHistory> history = this.getPriceHistory();
     bool oldPromoStatus;
@@ -122,7 +124,7 @@ abstract class Product {
                 '\n Der neue Preis beträgt: ' + newPrice.toString() +
                 this.currency + '\n' + this.Url,
           );
-          print('found new price on ' + this.Url);
+          Log.info('found new price on ' + this.Url);
         }
         if(oldPromoStatus != promoStatus){
           channel.send(
@@ -140,7 +142,7 @@ abstract class Product {
   }
 
   void save(){
-    print('saving product ' + this.sku);
+    Log.info('saving product ' + this.sku);
     List<String> domainArray = Uri.parse(this.Url).host.split('.');
     String shopName;
     String tld = domainArray.last;
@@ -164,13 +166,13 @@ abstract class Product {
       db.createSync( recursive: true );
     }
     db.writeAsStringSync(this.toJson());
-    print('saved product');
+    Log.info('saved product');
   }
 
   static Future<Product> create( String url ) async {
     Uri uri = Uri.tryParse(url);
     if( config['supportedHosts'].indexOf(uri.host) == -1 ){
-      print('site not supported');
+      Log.info('site not supported');
       // TODO Write Exception for that
       return null;
     }
@@ -187,13 +189,13 @@ abstract class Product {
       newProduct.addPriceToHistory(firstPrice);
       return newProduct;
     }
-    print('check failed');
+    Log.info('check failed');
     // TODO Write Exception for that
     return null;
   }
 
   static Product createFromData( String url, List<int> channels, List<ProductHistory> productHistory,{String title=null, String sku=null} ){
-    print('importing product');
+    Log.info('importing product');
     Product product = config['ShopCollection'].getInstanceFromShop(Uri.parse(url).host);
     product.Url = url;
     product._channels = channels;

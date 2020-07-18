@@ -5,6 +5,7 @@ class Log {
   static error( String message ) => Log._output( 'ERROR', message );
   static _output( String type, String message ) {
     DateTime now = DateTime.now();
+    message = message.replaceAll('\n', '');
     String fullMessage = '['+type+']['+now.day.toString()+'.'
         +now.month.toString()+'.' +now.year.toString()+' '+now.hour.toString()
         +':'+now.minute.toString()+':'+now.second.toString()+'] ' + message;

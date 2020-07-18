@@ -43,7 +43,9 @@ class JbHifiProduct extends Product {
 
   @override
   Future<String> getProductData() async {
-    http.Response res = await http.get(this.Url);
+    http.Response res = await http.get(this.Url, headers: {
+      'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)'
+    });
     return res.body;
   }
 

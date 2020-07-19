@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:nyxx/nyxx.dart';
 import 'package:discord_price_watcher/config.dart';
 import 'package:discord_price_watcher/product_history.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:discord_price_watcher/log.dart';
 
@@ -47,15 +48,20 @@ abstract class Product {
     }
   }
 
-  Future<double> retrievePrice(String productData);
+  double retrievePrice(String productData);
 
   Future<bool> check( String url );
 
-  Future<String> retrieveSKU(String productData);
+  String retrieveSKU(String productData);
 
-  Future<String> retrieveTitle(String productData);
+  String retrieveTitle(String productData);
 
-  Future<String> getProductData();
+  Future<String> getProductData() async {
+    http.Response res = await http.get(this.Url, headers: {
+      'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)'
+    });
+    return res.body;
+  }
 
   bool checkForPromo(String productData);
 

@@ -7,7 +7,7 @@ class RightStufAnimeProduct extends Product {
   String get currency => '\$';
 
   @override
-  Future<double> retrievePrice(productData) async {
+  double retrievePrice(productData) {
     Map dataList = jsonDecode(productData);
     double price = dataList['items'][0]['onlinecustomerprice_detail']['onlinecustomerprice'];
     return price;
@@ -28,13 +28,13 @@ class RightStufAnimeProduct extends Product {
   }
 
   @override
-  Future<String> retrieveSKU(String productData) async {
+  String retrieveSKU(String productData) {
     Map dataList = jsonDecode(productData);
     return dataList['items'][0]['itemid'];
   }
 
   @override
-  Future<String> retrieveTitle(String productData) async {
+  String retrieveTitle(String productData) {
     Map dataList = jsonDecode(productData);
     return dataList['items'][0]['displayname'];
   }

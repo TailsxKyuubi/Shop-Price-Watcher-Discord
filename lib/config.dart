@@ -9,7 +9,8 @@ Map config = {
   'supportedHosts': [
     'www.rightstufanime.com',
     'www.animeversand.com',
-    'www.jbhifi.com.au'
+    'www.jbhifi.com.au',
+    'www.wowhd.us'
   ]
 };
 NyxxVm bot;

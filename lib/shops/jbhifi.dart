@@ -22,7 +22,7 @@ class JbHifiProduct extends Product {
   }
 
   @override
-  Future<double> retrievePrice(String productData) async {
+  double retrievePrice(String productData) {
     var html = parse(productData);
     return double.tryParse(
         html.querySelector('meta[itemprop=price]').attributes['content']
@@ -30,23 +30,15 @@ class JbHifiProduct extends Product {
   }
 
   @override
-  Future<String> retrieveSKU(String productData) async {
+  String retrieveSKU(String productData) {
     var html = parse(productData);
     return html.querySelector('meta[itemprop=sku]').attributes['content'];
   }
 
   @override
-  Future<String> retrieveTitle(String productData) async {
+  String retrieveTitle(String productData) {
     var html = parse(productData);
     return html.querySelector('h1[itemprop=name]').innerHtml;
-  }
-
-  @override
-  Future<String> getProductData() async {
-    http.Response res = await http.get(this.Url, headers: {
-      'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)'
-    });
-    return res.body;
   }
 
   @override

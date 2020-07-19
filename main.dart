@@ -13,6 +13,7 @@ import 'package:discord_price_watcher/log.dart';
 import 'package:discord_price_watcher/shops/rightstuffanime.dart';
 import 'package:discord_price_watcher/shops/animeversand.dart';
 import 'package:discord_price_watcher/shops/jbhifi.dart';
+import 'package:discord_price_watcher/shops/wowhd.dart';
 ProductCollection pc;
 
 void main(){
@@ -31,6 +32,8 @@ void main(){
     config['ShopCollection'].addShop('www.animeversand.com', animeversand);
     ClassMirror jbhifi = reflectClass(JbHifiProduct);
     config['ShopCollection'].addShop('www.jbhifi.com.au',jbhifi);
+    ClassMirror wowhdUS = reflectClass(WowHdProduct);
+    config['ShopCollection'].addShop('www.wowhd.us',wowhdUS);
     Log.info('Shops loaded');
 
     // Initiate Bot
@@ -113,6 +116,11 @@ addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
   }
   Uri url = Uri.parse(message.split(' ')[1]);
   String link = url.scheme +'://'+url.host+url.path;
+  List<String> supportedHosts = config['supportedHosts'];
+  if(supportedHosts.indexOf(url.host) == -1){
+    channel.send(content: 'Dieser Shop wird zurzeit nicht unterstützt');
+    return;
+  }
   bool productExists = false;
   pc.collection.forEach((Product product) {
     if(product.Url == link){

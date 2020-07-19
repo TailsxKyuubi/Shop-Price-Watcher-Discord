@@ -22,19 +22,19 @@ class AnimeVersandProduct extends Product {
   }
 
   @override
-  Future<double> retrievePrice(String productData) async {
+  double retrievePrice(String productData) {
     Document html = parse(productData);
     return double.tryParse(html.querySelector('meta[itemprop=price]').attributes['content']);
   }
 
   @override
-  Future<String> retrieveSKU(String productData) async {
+  String retrieveSKU(String productData) {
     Document html = parse(productData);
     return html.querySelector('.base-info--entry.entry--sku > .entry--content').text;
   }
 
   @override
-  Future<String> retrieveTitle(String productData) async {
+  String retrieveTitle(String productData) {
     Document html = parse(productData);
     return html.querySelector('h1.product--title[itemprop=name]').innerHtml;
   }
@@ -42,14 +42,6 @@ class AnimeVersandProduct extends Product {
   @override
   bool checkForPromo(String productData) {
     return false;
-  }
-
-  @override
-  Future<String> getProductData() async {
-    http.Response res = await http.get(this.Url, headers: {
-      'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)'
-    });
-    return res.body;
   }
 
 }

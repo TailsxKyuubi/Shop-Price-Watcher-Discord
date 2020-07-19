@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:mirrors';
 
-import 'package:nyxx/Vm.dart';
 import 'package:nyxx/nyxx.dart';
 
 import 'package:discord_price_watcher/config.dart';
@@ -37,7 +36,7 @@ void main(){
     Log.info('Shops loaded');
 
     // Initiate Bot
-    bot = NyxxVm(config['discord-token'],ignoreExceptions: false);
+    bot = Nyxx(config['discord-token'],ignoreExceptions: false);
     bot.onMessageReceived.listen(MessageReceivedHandler);
 
 
@@ -86,7 +85,7 @@ planningTimer() async{
     });
   });
 }
-MessageReceivedHandler( MessageEvent event ){
+MessageReceivedHandler( event ){
   if(event.message.content.split(' ')[0] == '!addWatcher'){
     addWatcherPage(event.message.content,event.message.channel, event.message.guild);
   }else if(event.message.content.split(' ')[0] == '!listProducts'){
@@ -94,7 +93,7 @@ MessageReceivedHandler( MessageEvent event ){
   }
 }
 
-listProductsFromChannel( MessageEvent event ){
+listProductsFromChannel( event ){
   int channelId = int.tryParse(event.message.channel.id.id);
   String products = '';
   var embed = EmbedBuilder();
@@ -125,10 +124,10 @@ addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
   pc.collection.forEach((Product product) {
     if(product.Url == link){
       productExists = true;
-      if(product.getChannels().indexOf(int.tryParse(channel.id.id)) != -1){
+      if(product.getChannels().indexOf(channel.id.id) != -1){
         channel.send(content: 'Dieses Produkt wurde bereits eingetragen');
       }else{
-        product.addChannel(int.tryParse(channel.id.id));
+        product.addChannel(channel.id.id);
         channel.send(content: 'Dieses Produkt wurde diesem Channel hinzugefügt');
         product.save();
       }
@@ -137,7 +136,7 @@ addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
   });
   if(!productExists) {
     Product product = await Product.create(link);
-    product.addChannel(int.tryParse(channel.id.id));
+    product.addChannel(channel.id.id);
     pc.collection.add(product);
     product.initiateTimer();
     channel.send(content: 'Produkt wurde hinzugefügt');

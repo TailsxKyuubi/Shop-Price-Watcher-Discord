@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:nyxx/Vm.dart';
+import 'package:nyxx/nyxx.dart';
 import 'package:discord_price_watcher/shop_collection.dart';
 
 import 'package:discord_price_watcher/log.dart';
@@ -13,7 +13,7 @@ Map config = {
     'www.wowhd.us'
   ]
 };
-NyxxVm bot;
+Nyxx bot;
 
 loadConfig( Map configJson ){
   if(configJson['discord-token'] == null || configJson['discord-token'] == ''){

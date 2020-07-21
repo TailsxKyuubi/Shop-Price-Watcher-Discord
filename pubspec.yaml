@@ -4,13 +4,15 @@ version: 0.2.0
 
 dependencies:
   html:
-  nyxx:
-    git:
-      url: git://github.com/l7ssha/nyxx.git
-      ref: rewrite_modular
-      path: nyxx
+  nyxx: 1.0.0
+  nyxx.commander: ^1.0.0
   http: ^0.12.1
   path: ^1.7.0
+dependency_overrides:
+  nyxx:
+    path: '../../AppData/Roaming/Pub/Cache/hosted/pub.dartlang.org/nyxx-1.0.0/'
+  nyxx.commander:
+    path: '../../AppData/Roaming/Pub/Cache/hosted/pub.dartlang.org/nyxx.commander-1.0.0/'
 
 environment:
   sdk: '>=2.1.0 <3.0.0'

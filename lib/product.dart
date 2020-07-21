@@ -122,7 +122,7 @@ abstract class Product {
       //priceDifference = priceDifference.truncateToDouble();
       
       this.getChannels().forEach((channelId) async{
-        TextChannel channel = await bot.getChannel(Snowflake(channelId)) as TextChannel;
+        GuildTextChannel channel = await bot.getChannel(Snowflake(channelId)) as GuildTextChannel;
         if(oldPrice != newPrice) {
           channel.send(
             content: "Das Produkt " + this.title + " hat einen neuen Preis. \n" +
@@ -141,9 +141,12 @@ abstract class Product {
     this.save();
   }
 
-  void delete(){
-    this._timer.cancel();
-    this.active = false;
+  void delete(int channel){
+    this._channels.remove(channel);
+    if(this._channels.length == 0){
+      this._timer.cancel();
+      this.active = false;
+    }
     this.save();
   }
 

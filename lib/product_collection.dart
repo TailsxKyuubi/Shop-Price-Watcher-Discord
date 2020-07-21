@@ -7,8 +7,7 @@ import 'package:path/path.dart';
 
 import 'package:discord_price_watcher/log.dart';
 
-ProductCollection productCollection;
-
+ProductCollection pc;
 class ProductCollection {
   List<Product> collection = [];
   ProductCollection(){
@@ -46,5 +45,18 @@ class ProductCollection {
         }
       });
     }
+  }
+
+  Product findProductByUrl( String url ){
+    Uri uri = Uri.parse(url);
+    url = 'https://' + uri.host + uri.path;
+    Product result = null;
+    for(int i = 0;i<collection.length;i++){
+      if(collection[i].Url == url){
+        result = this.collection[i];
+        break;
+      }
+    }
+    return result;
   }
 }

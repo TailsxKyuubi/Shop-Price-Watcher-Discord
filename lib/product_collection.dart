@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:discord_price_watcher/product.dart';
 import 'package:discord_price_watcher/product_history.dart';
+import 'package:discord_price_watcher/product_list.dart';
 import 'package:path/path.dart';
 
 import 'package:discord_price_watcher/log.dart';
@@ -10,6 +11,7 @@ import 'package:discord_price_watcher/log.dart';
 ProductCollection pc;
 class ProductCollection {
   List<Product> collection = [];
+  List<ProductList> listCollection = [];
   ProductCollection(){
     Log.info('loading new database');
     Directory DbDirectory = Directory('db');
@@ -55,6 +57,14 @@ class ProductCollection {
       if(collection[i].Url == url){
         result = this.collection[i];
         break;
+      }
+    }
+    if(result == null){
+      for(int i = 0;i<listCollection.length;i++){
+        listCollection.forEach((productList) => result == null ?
+            productList.collection.forEach((product) =>
+            result == null && product.getUrl() == url ? result = product : '' )
+        : '' );
       }
     }
     return result;

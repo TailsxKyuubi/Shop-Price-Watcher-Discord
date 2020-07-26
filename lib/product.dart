@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:discord_price_watcher/helper.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:discord_price_watcher/config.dart';
 import 'package:discord_price_watcher/product_history.dart';
@@ -119,7 +120,6 @@ abstract class Product {
       double oldPrice = history[(history.length - 2)].getPrice();
       double newPrice = history.last.getPrice();
       double priceDifference = newPrice - oldPrice;
-      //priceDifference = priceDifference.truncateToDouble();
       
       this.getChannels().forEach((channelId) async{
         GuildTextChannel channel = await bot.getChannel(Snowflake(channelId)) as GuildTextChannel;
@@ -152,24 +152,8 @@ abstract class Product {
 
   void save(){
     Log.info('saving product ' + this.sku);
-    List<String> domainArray = Uri.parse(this.Url).host.split('.');
-    String shopName;
-    String tld = domainArray.last;
-    switch(tld){
-      case 'au':
-      case 'jp':
-      case 'uk':
-        if( domainArray[domainArray.length-2] == 'co' || domainArray[domainArray.length-2] == 'com' ){
-          shopName = domainArray[domainArray.length-3];
-        }else{
-          shopName = domainArray[domainArray.length-2];
-        }
-        break;
-      default:
-        shopName = domainArray[domainArray.length-2];
-        break;
-    }
 
+    String shopName = getShopName(this.Url);
     File db = File('db/'+shopName+'~'+this.sku+'.json');
     if(!db.existsSync()){
       db.createSync( recursive: true );

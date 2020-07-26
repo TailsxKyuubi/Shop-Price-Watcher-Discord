@@ -1,6 +1,6 @@
 name: discord_price_watcher
 description: A discord price watcher bot
-version: 0.2.0
+version: 1.0.0
 
 dependencies:
   html:
@@ -8,6 +8,7 @@ dependencies:
   nyxx.commander: ^1.0.0
   http: ^0.12.1
   path: ^1.7.0
+  intl: ^0.16.1
 dependency_overrides:
   nyxx:
     path: '../../AppData/Roaming/Pub/Cache/hosted/pub.dartlang.org/nyxx-1.0.0/'

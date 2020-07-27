@@ -25,6 +25,7 @@ class Commands {
         Commands.addProduct(context, message);
         break;
       case 'list':
+        Log.info('trying to add list');
         Commands.addList(context, message);
         break;
       default:
@@ -98,7 +99,12 @@ class Commands {
   }
 
   static void addList( CommandContext context, String message ){
-
+    if(pc.listCollection[message] != null){
+      pc.listCollection[message].addChannel(context.channel.id.id);
+      context.channel.send(content: 'Channel erfolgreich zur Produktliste Überwachung hinzugefügt');
+    }else{
+      context.channel.send(content: 'Die angegebene Produktliste exisitiert nicht');
+    }
   }
 
   static void removeList( CommandContext context, String message ){

@@ -10,19 +10,10 @@ class AnimeversandSalesProductList extends ProductList {
   String Name = 'AnimeVersandSales';
 
   @override
-  String Url = '';
-
-  @override
-  bool check() {
-    // TODO: implement check
-    throw UnimplementedError();
-  }
-
-  @override
   Future<List<Element>> retrieveData() async {
     http.Response res = await http.get('https://www.animeversand.com/widgets/listing/listingCount/sCategory/45?p=3&c=45&o=1&n=1000&loadProducts=1');
     Map jsonMap = jsonDecode(res.body);
-    return parse(jsonMap['listing']).getElementsByClassName('.box--minimal');
+    return parse(jsonMap['listing']).getElementsByClassName('box--minimal');
   }
 
   @override
@@ -50,5 +41,4 @@ class AnimeversandSalesProductList extends ProductList {
     Element productElement = element;
     return productElement.querySelector('.product--title').attributes['title'];
   }
-
 }

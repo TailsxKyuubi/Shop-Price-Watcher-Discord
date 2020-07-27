@@ -23,6 +23,10 @@ abstract class Product {
     return _priceHistory;
   }
 
+  void stopTimer(){
+    this._timer.cancel();
+  }
+
   List<int> getChannels(){
     return _channels;
   }

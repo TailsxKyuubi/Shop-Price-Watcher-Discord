@@ -48,7 +48,12 @@ class RightStufAnimeProduct extends Product {
   @override
   Future<String> getProductData() async {
     String path = Uri.parse(Url).path.substring(1);
-    http.Response res = await http.get('https://www.rightstufanime.com/api/items?country=US&currency=USD&fieldset=details&include=facets&language=en&pricelevel=5&url='+path);
+    http.Response res = await http.get(
+      'https://www.rightstufanime.com/api/items?country=US&currency=USD&fieldset=details&include=facets&language=en&pricelevel=5&url='+path,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0'
+      }
+    );
     return res.body;
   }
 

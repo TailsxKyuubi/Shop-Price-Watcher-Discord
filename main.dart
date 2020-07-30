@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:mirrors';
 
+import 'package:intl/intl.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx.commander/commander.dart';
 
@@ -22,6 +23,7 @@ void main(){
     String configJsonString = configFile.readAsStringSync();
     Map configJson = jsonDecode(configJsonString);
     loadConfig(configJson);
+    Intl.defaultLocale = 'de_DE';
     Log.info('loaded config');
 
     // Add Pages to Shop Mapping

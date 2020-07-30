@@ -100,14 +100,25 @@ class Commands {
 
   static void addList( CommandContext context, String message ){
     if(pc.listCollection[message] != null){
-      pc.listCollection[message].addChannel(context.channel.id.id);
-      context.channel.send(content: 'Channel erfolgreich zur Produktliste Überwachung hinzugefügt');
+      if(pc.listCollection[message].addChannel(context.channel.id.id)){
+        context.channel.send(content: 'Channel erfolgreich zur Produktliste Überwachung hinzugefügt');
+      }else{
+        context.channel.send(content: 'Channel konnte nicht zur Produktliste Überwachung hinzugefügt werden');
+      }
     }else{
-      context.channel.send(content: 'Die angegebene Produktliste exisitiert nicht');
+      context.channel.send(content: 'Die angegebene Produktliste existiert nicht');
     }
   }
 
   static void removeList( CommandContext context, String message ){
-
+    if(pc.listCollection[message] != null){
+      if(pc.listCollection[message].delete(context.channel.id.id)){
+        context.channel.send(content: 'Channel wurde erfolgreich von der Produktliste Überwachung entfernt');
+      }else{
+        context.channel.send(content: 'Channel konnte nicht von der Produktliste Überwachung entfernt werden');
+      }
+    }else{
+      context.channel.send(content: 'Die angegebene Produktliste existiert nicht');
+    }
   }
 }

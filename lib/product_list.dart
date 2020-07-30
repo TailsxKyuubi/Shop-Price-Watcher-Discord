@@ -199,7 +199,6 @@ abstract class ProductList {
       Log.error('channel is already subscribed');
       return false;
     }
-    Log.info('channel');
     if(this.channels.isEmpty){
       this.updateList();
       this._setupTimer();
@@ -209,15 +208,16 @@ abstract class ProductList {
     return true;
   }
 
-  void delete( int channelId ){
+  bool delete( int channelId ){
     if(this.channels.indexOf(channelId) == -1){
-      return;
+      return false;
     }
     this.channels.remove(channelId);
     if(this.channels.isEmpty){
       this._timer.cancel();
       this._timer = null;
     }
+    return true;
   }
 
   save(){

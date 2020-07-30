@@ -74,7 +74,16 @@ abstract class Product {
   Future<bool> updatePrice() async{
     Log.info('update price');
     String productData = await this.getProductData();
-    double newPrice = await this.retrievePrice(productData);
+    bool error = false;
+    double newPrice;
+    try {
+      newPrice = await this.retrievePrice(productData);
+    } catch(exception){
+      error = true;
+    }
+    if(error){
+      return false;
+    }
     ProductHistory historyObject = ProductHistory(newPrice, DateTime.now());
     bool difference = _priceHistory.last.getPrice() != newPrice;
     this.addPriceToHistory(historyObject);

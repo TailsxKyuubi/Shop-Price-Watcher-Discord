@@ -79,6 +79,7 @@ abstract class Product {
     try {
       newPrice = await this.retrievePrice(productData);
     } catch(exception){
+      Log.error('fetching price failed');
       error = true;
     }
     if(error){

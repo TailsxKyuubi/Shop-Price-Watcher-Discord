@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:discord_price_watcher/config.dart';
 import 'package:discord_price_watcher/log.dart';
 import 'package:discord_price_watcher/product.dart';
-import 'package:nyxx.commander/commander.dart';
+import 'package:nyxx_commander/commander.dart';
 import 'package:discord_price_watcher/product_collection.dart';
 
+import 'package:http/http.dart' as http;
+
+import 'package:dio/dio.dart';
+import 'package:dio/adapter.dart';
 class Commands {
 
   static void pong( CommandContext context, String message ){
@@ -120,5 +126,40 @@ class Commands {
     }else{
       context.channel.send(content: 'Die angegebene Produktliste existiert nicht');
     }
+  }
+
+  static void checkCountry(CommandContext context, String message) async{
+    var dio = new Dio();
+    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
+      // config the http client
+      client.findProxy = (uri) {
+        return "PROXY de680.nordvpn.com:80";
+      };
+      // you can also create a new HttpClient to dio
+      // return new HttpClient();
+    };
+    headerHandler.setHeaderField('Proxy-Authorization','Basic UnU2RjZSN1JNb3BHajZ0V2gxM2J6Q2FlOmtnVUNDOUJCWTcxOTZNcXRpb2dWaHBZcQ==', 'test.com');
+    headerHandler.setHeaderField('Authorization','Basic UnU2RjZSN1JNb3BHajZ0V2gxM2J6Q2FlOmtnVUNDOUJCWTcxOTZNcXRpb2dWaHBZcQ==', 'test.com');
+    //http.Response res = await http.get('geoip.sezzle.com/v1/geoip/ipdetails',headers: headerHandler.getHeaders('test.com'));
+    try {
+      var value  = await dio.get('https://geoip.sezzle.com/v1/geoip/ipdetails',options: Options( headers: headerHandler.getHeaders('test.com')));
+      Log.info(value.data);
+      context.channel.send(content: '```json\n'+value.data+'```');
+    } on DioError catch(e) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx and is also not 304.
+      if(e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        print(e.response.request);
+      } else{
+        // Something happened in setting up or sending the request that triggered an Error
+        print(e.request);
+        print(e.message);
+      }
+    }
+    Log.info('test');
+    //Log.info(res.request.toString());
+    //context.channel.send(content: res.request.headers.toString());
   }
 }

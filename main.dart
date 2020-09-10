@@ -5,7 +5,6 @@ import 'dart:mirrors';
 
 import 'package:intl/intl.dart';
 import 'package:nyxx/nyxx.dart';
-import 'package:nyxx.commander/commander.dart';
 
 import 'package:discord_price_watcher/config.dart';
 import 'package:discord_price_watcher/product_collection.dart';
@@ -15,6 +14,7 @@ import 'package:discord_price_watcher/shops/rightstuffanime.dart';
 import 'package:discord_price_watcher/shops/animeversand.dart';
 import 'package:discord_price_watcher/shops/jbhifi.dart';
 import 'package:discord_price_watcher/shops/wowhd.dart';
+import 'package:nyxx_commander/commander.dart';
 
 void main(){
   Log.info('starting up');
@@ -44,7 +44,8 @@ void main(){
       Commander commander = Commander(bot,prefix: '!')
         ..registerCommand('ping',Commands.pong)
         ..registerCommand('add', Commands.add)
-        ..registerCommand('remove', Commands.remove);
+        ..registerCommand('remove', Commands.remove)
+        //..registerCommand('checkip', Commands.checkCountry);
     }catch(exception){
       print("error");
     }

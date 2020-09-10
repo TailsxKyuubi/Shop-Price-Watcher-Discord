@@ -44,7 +44,7 @@ void main(){
       Commander commander = Commander(bot,prefix: '!')
         ..registerCommand('ping',Commands.pong)
         ..registerCommand('add', Commands.add)
-        ..registerCommand('remove', Commands.remove)
+        ..registerCommand('remove', Commands.remove);
         //..registerCommand('checkip', Commands.checkCountry);
     }catch(exception){
       print("error");

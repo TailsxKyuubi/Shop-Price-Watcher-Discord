@@ -1,15 +1,16 @@
 name: discord_price_watcher
 description: A discord price watcher bot
-version: 0.2.0
+version: 1.0.0
 
 dependencies:
   html:
-  nyxx:
-    git:
-      url: git://github.com/l7ssha/nyxx.git
-      ref: development
   http: ^0.12.1
   path: ^1.7.0
+  intl: ^0.16.1
+  intl_translation: ^0.17.10
+  dio: ^3.0.9
+  nyxx:
+  nyxx_commander:
 
 environment:
   sdk: '>=2.1.0 <3.0.0'

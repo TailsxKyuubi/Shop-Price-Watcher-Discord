@@ -1,6 +1,5 @@
 import 'package:discord_price_watcher/product.dart';
 import 'package:html/parser.dart' show parse;
-import 'package:http/http.dart' as http;
 
 class JbHifiProduct extends Product {
 

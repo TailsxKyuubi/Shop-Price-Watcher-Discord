@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:discord_price_watcher/helper.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:discord_price_watcher/config.dart';
 import 'package:discord_price_watcher/product_history.dart';
@@ -20,6 +21,10 @@ abstract class Product {
 
   List<ProductHistory> getPriceHistory(){
     return _priceHistory;
+  }
+
+  void stopTimer(){
+    this._timer.cancel();
   }
 
   List<int> getChannels(){
@@ -69,7 +74,17 @@ abstract class Product {
   Future<bool> updatePrice() async{
     Log.info('update price');
     String productData = await this.getProductData();
-    double newPrice = await this.retrievePrice(productData);
+    bool error = false;
+    double newPrice;
+    try {
+      newPrice = await this.retrievePrice(productData);
+    } catch(exception){
+      Log.error('fetching price failed');
+      error = true;
+    }
+    if(error){
+      return false;
+    }
     ProductHistory historyObject = ProductHistory(newPrice, DateTime.now());
     bool difference = _priceHistory.last.getPrice() != newPrice;
     this.addPriceToHistory(historyObject);
@@ -119,10 +134,9 @@ abstract class Product {
       double oldPrice = history[(history.length - 2)].getPrice();
       double newPrice = history.last.getPrice();
       double priceDifference = newPrice - oldPrice;
-      //priceDifference = priceDifference.truncateToDouble();
       
       this.getChannels().forEach((channelId) async{
-        TextChannel channel = await bot.getChannel(Snowflake(channelId)) as TextChannel;
+        GuildTextChannel channel = await bot.getChannel(Snowflake(channelId)) as GuildTextChannel;
         if(oldPrice != newPrice) {
           channel.send(
             content: "Das Produkt " + this.title + " hat einen neuen Preis. \n" +
@@ -141,32 +155,19 @@ abstract class Product {
     this.save();
   }
 
-  void delete(){
-    this._timer.cancel();
-    this.active = false;
+  void delete(int channel){
+    this._channels.remove(channel);
+    if(this._channels.length == 0){
+      this._timer.cancel();
+      this.active = false;
+    }
     this.save();
   }
 
   void save(){
     Log.info('saving product ' + this.sku);
-    List<String> domainArray = Uri.parse(this.Url).host.split('.');
-    String shopName;
-    String tld = domainArray.last;
-    switch(tld){
-      case 'au':
-      case 'jp':
-      case 'uk':
-        if( domainArray[domainArray.length-2] == 'co' || domainArray[domainArray.length-2] == 'com' ){
-          shopName = domainArray[domainArray.length-3];
-        }else{
-          shopName = domainArray[domainArray.length-2];
-        }
-        break;
-      default:
-        shopName = domainArray[domainArray.length-2];
-        break;
-    }
 
+    String shopName = getShopName(this.Url);
     File db = File('db/'+shopName+'~'+this.sku+'.json');
     if(!db.existsSync()){
       db.createSync( recursive: true );

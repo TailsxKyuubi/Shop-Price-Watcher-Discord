@@ -3,18 +3,18 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:mirrors';
 
-import 'package:nyxx/Vm.dart';
+import 'package:intl/intl.dart';
 import 'package:nyxx/nyxx.dart';
 
 import 'package:discord_price_watcher/config.dart';
 import 'package:discord_price_watcher/product_collection.dart';
-import 'package:discord_price_watcher/product.dart';
 import 'package:discord_price_watcher/log.dart';
+import 'package:discord_price_watcher/commands.dart';
 import 'package:discord_price_watcher/shops/rightstuffanime.dart';
 import 'package:discord_price_watcher/shops/animeversand.dart';
 import 'package:discord_price_watcher/shops/jbhifi.dart';
 import 'package:discord_price_watcher/shops/wowhd.dart';
-ProductCollection pc;
+import 'package:nyxx_commander/commander.dart';
 
 void main(){
   Log.info('starting up');
@@ -23,6 +23,7 @@ void main(){
     String configJsonString = configFile.readAsStringSync();
     Map configJson = jsonDecode(configJsonString);
     loadConfig(configJson);
+    Intl.defaultLocale = 'de_DE';
     Log.info('loaded config');
 
     // Add Pages to Shop Mapping
@@ -37,10 +38,17 @@ void main(){
     Log.info('Shops loaded');
 
     // Initiate Bot
-    bot = NyxxVm(config['discord-token'],ignoreExceptions: false);
-    bot.onMessageReceived.listen(MessageReceivedHandler);
-
-
+    try{
+      bot = Nyxx(config['discord-token'],ignoreExceptions: false);
+      //bot.onMessageReceived.listen(MessageReceivedHandler);
+      Commander commander = Commander(bot,prefix: '!')
+        ..registerCommand('ping',Commands.pong)
+        ..registerCommand('add', Commands.add)
+        ..registerCommand('remove', Commands.remove)
+        //..registerCommand('checkip', Commands.checkCountry);
+    }catch(exception){
+      print("error");
+    }
     pc = ProductCollection();
     planningTimer();
   }else{
@@ -48,6 +56,7 @@ void main(){
     exit(0);
   }
 }
+
 
 planningTimer() async{
   DateTime now;
@@ -86,15 +95,8 @@ planningTimer() async{
     });
   });
 }
-MessageReceivedHandler( MessageEvent event ){
-  if(event.message.content.split(' ')[0] == '!addWatcher'){
-    addWatcherPage(event.message.content,event.message.channel, event.message.guild);
-  }else if(event.message.content.split(' ')[0] == '!listProducts'){
-    listProductsFromChannel( event );
-  }
-}
 
-listProductsFromChannel( MessageEvent event ){
+listProductsFromChannel( event ){
   int channelId = int.tryParse(event.message.channel.id.id);
   String products = '';
   var embed = EmbedBuilder();
@@ -107,40 +109,4 @@ listProductsFromChannel( MessageEvent event ){
   });
   embed.addField(name: 'Liste Produkte', content: products);
   event.message.channel.send(embed: embed);
-}
-
-addWatcherPage( String message, MessageChannel channel, Guild guild ) async {
-  if(message.split(' ')[1] == null && message.split(' ')[1] == ''){
-    Log.info('no url provided');
-    return;
-  }
-  Uri url = Uri.parse(message.split(' ')[1]);
-  String link = url.scheme +'://'+url.host+url.path;
-  List<String> supportedHosts = config['supportedHosts'];
-  if(supportedHosts.indexOf(url.host) == -1){
-    channel.send(content: 'Dieser Shop wird zurzeit nicht unterstützt');
-    return;
-  }
-  bool productExists = false;
-  pc.collection.forEach((Product product) {
-    if(product.Url == link){
-      productExists = true;
-      if(product.getChannels().indexOf(int.tryParse(channel.id.id)) != -1){
-        channel.send(content: 'Dieses Produkt wurde bereits eingetragen');
-      }else{
-        product.addChannel(int.tryParse(channel.id.id));
-        channel.send(content: 'Dieses Produkt wurde diesem Channel hinzugefügt');
-        product.save();
-      }
-    }
-
-  });
-  if(!productExists) {
-    Product product = await Product.create(link);
-    product.addChannel(int.tryParse(channel.id.id));
-    pc.collection.add(product);
-    product.initiateTimer();
-    channel.send(content: 'Produkt wurde hinzugefügt');
-    product.save();
-  }
 }

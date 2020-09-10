@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:nyxx/Vm.dart';
+import 'package:discord_price_watcher/header_handler.dart';
+import 'package:nyxx/nyxx.dart';
 import 'package:discord_price_watcher/shop_collection.dart';
 
 import 'package:discord_price_watcher/log.dart';
@@ -13,8 +14,8 @@ Map config = {
     'www.wowhd.us'
   ]
 };
-NyxxVm bot;
-
+Nyxx bot;
+HeaderHandler headerHandler = new HeaderHandler();
 loadConfig( Map configJson ){
   if(configJson['discord-token'] == null || configJson['discord-token'] == ''){
     Log.error('no discord token given');
